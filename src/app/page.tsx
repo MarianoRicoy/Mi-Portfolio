@@ -2,7 +2,6 @@ import { portfolioEs } from "@/data/portfolio-es";
 import {
   SeccionPortada,
   SeccionHero,
-  SeccionSobreMi,
   SeccionProyectos,
   SeccionHabilidades,
   SeccionExperiencia,
@@ -23,11 +22,16 @@ export default function Home() {
 
   return (
     <div className="pb-18">
-      <SeccionPortada nombrePersona={persona.fullName} />
-
-      <main className="section-shell flex flex-col gap-22 md:gap-28">
+      {/* 1. Header Fijo y Hero de Entrada */}
+      <div className="section-shell">
         <SeccionHero hero={hero} />
-        <SeccionSobreMi sobreMi={sobreMi} />
+      </div>
+
+      {/* 2. Foto Gigante con el "Sobre mí" superpuesto y centrado en el medio */}
+      <SeccionPortada nombrePersona={persona.fullName} sobreMi={sobreMi} />
+
+      {/* 3. El resto de las secciones */}
+      <main className="section-shell flex flex-col gap-22 md:gap-28 mt-22 md:mt-28">
         <SeccionProyectos proyectos={proyectos} />
         <SeccionHabilidades habilidades={habilidades} />
         <SeccionExperiencia experiencia={experiencia} formacion={formacion} />
