@@ -8,7 +8,7 @@ type SeccionExperienciaProps = {
 export function SeccionExperiencia({ experiencia, formacion }: SeccionExperienciaProps) {
   return (
     <section id="experiencia" className="line-divider pt-10 md:pt-14">
-      <p className="kicker">Experiencia</p>
+      <p className="kicker text-black/60">[ Experiencia ]</p>
       <div className="mt-7 grid gap-5 md:grid-cols-2">
         {experiencia.map((trabajo) => (
           <article
@@ -23,7 +23,7 @@ export function SeccionExperiencia({ experiencia, formacion }: SeccionExperienci
         ))}
       </div>
       <div className="mt-6 rounded-2xl border border-black/15 bg-white/45 p-5">
-        <p className="kicker">{formacion.title}</p>
+        <p className="kicker text-black/60">[ {formacion.title} ]</p>
         <p className="mt-3 text-sm leading-relaxed text-black/75">{formacion.item}</p>
       </div>
     </section>

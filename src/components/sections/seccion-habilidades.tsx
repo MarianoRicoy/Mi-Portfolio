@@ -7,7 +7,7 @@ type SeccionHabilidadesProps = {
 export function SeccionHabilidades({ habilidades }: SeccionHabilidadesProps) {
   return (
     <section id="skills" className="line-divider pt-10 md:pt-14">
-      <p className="kicker">Skills</p>
+      <p className="kicker text-black/60">[ Skills ]</p>
       <div className="mt-6 grid gap-8 md:grid-cols-3">
         <article>
           <h3 className="text-base font-semibold">Frontend</h3>

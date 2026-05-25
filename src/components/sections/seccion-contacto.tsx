@@ -60,7 +60,7 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
   return (
     <>
       <section id="contacto" className="contact-panel rounded-3xl p-8 md:p-10">
-        <p className="kicker text-black/58">{contacto.title}</p>
+        <p className="kicker text-black/60">[ {contacto.title} ]</p>
         <h2 className="title-display mt-4 text-[clamp(2.3rem,7vw,5rem)] text-black/92">
           {persona.fullName}
         </h2>

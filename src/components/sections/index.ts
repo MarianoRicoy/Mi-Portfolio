@@ -1,5 +1,6 @@
 export { SeccionPortada } from "./seccion-portada";
 export { SeccionHero } from "./seccion-hero";
+export { SeccionSobreMi } from "./seccion-sobre-mi";
 export { SeccionProyectos } from "./seccion-proyectos";
 export { SeccionHabilidades } from "./seccion-habilidades";
 export { SeccionExperiencia } from "./seccion-experiencia";

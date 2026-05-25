@@ -1,22 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 type NavbarProps = {
   personName: string;
+  isTypingFinished?: boolean;
 };
 
 const navItems = [
-  { href: "#sobre-mi", label: "Sobre mí" },
   { href: "#proyectos", label: "Proyectos" },
   { href: "#skills", label: "Servicios" },
   { href: "#contacto", label: "Contacto" },
 ];
 
-export function Navbar({ personName }: NavbarProps) {
-  const [isAfterHero, setIsAfterHero] = useState<boolean>(false);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const introCoverRef = useRef<HTMLElement | null>(null);
+export function Navbar({ personName, isTypingFinished = false }: NavbarProps) {
+  const [hasScrolled, setHasScrolled] = useState<boolean>(false);
   const marcaCompacta =
     personName
       .split(" ")
@@ -26,44 +24,41 @@ export function Navbar({ personName }: NavbarProps) {
       .slice(0, 3) || "MFR";
 
   useEffect(() => {
-    introCoverRef.current = document.getElementById("intro-cover");
-    const introCover = introCoverRef.current;
-    const navbar = document.getElementById("navbar");
-
-    if (!introCover) {
-      setIsAfterHero(true);
-      return;
-    }
-
-    const navbarHeight = navbar?.offsetHeight ?? 0;
-
-    observerRef.current = new IntersectionObserver(
-      ([entry]: IntersectionObserverEntry[]) => {
-        setIsAfterHero(!entry.isIntersecting);
-      },
-      {
-        threshold: 0,
-        rootMargin: `-${navbarHeight}px 0px 0px 0px`,
+    const handleScroll = () => {
+      // Si el usuario scrolea aunque sea un solo píxel (1px), marcamos hasScrolled como true
+      if (window.scrollY > 1) {
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
       }
-    );
+    };
 
-    observerRef.current.observe(introCover);
+    // Añadir el listener al scroll
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    
+    // Chequeo inicial por si la página ya carga con scroll
+    handleScroll();
 
     return () => {
-      observerRef.current?.disconnect();
-      observerRef.current = null;
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  // La barra se muestra si el usuario ya scroleó aunque sea un mínimo (1px) O si terminó la máquina de escribir
+  const shouldShowNavbar = hasScrolled || isTypingFinished;
+
+  // Los estilos cromáticos de fondo y color cambian de transparente (overlay) a vidrio esmerilado (sticky) basados estrictamente en si el usuario ya movió la pantalla (hasScrolled)
+  const navbarVisualStyleClass = hasScrolled ? "navbar--sticky" : "navbar--overlay";
 
   return (
     <header
       id="navbar"
-      className={`navbar ${isAfterHero ? "navbar--sticky" : "navbar--overlay"}`}
+      className={`navbar ${navbarVisualStyleClass} ${shouldShowNavbar ? "" : "opacity-0 pointer-events-none -translate-y-4"}`}
     >
       <nav className="navbar-inner" aria-label="Navegación principal">
-        <p className={`navbar-brand ${isAfterHero ? "navbar-brand--compact" : ""}`} aria-label={personName}>
+        <p className={`navbar-brand ${hasScrolled ? "navbar-brand--compact" : ""}`} aria-label={personName}>
           <span className="navbar-brand-full">{personName}</span>
-          <span className="navbar-brand-compact" aria-hidden={!isAfterHero}>
+          <span className="navbar-brand-compact" aria-hidden={!hasScrolled}>
             {marcaCompacta}
           </span>
         </p>

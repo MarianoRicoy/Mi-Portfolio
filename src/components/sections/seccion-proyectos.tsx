@@ -7,12 +7,7 @@ type SeccionProyectosProps = {
 export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
   return (
     <section id="proyectos" className="line-divider pt-10 md:pt-14">
-      <div className="flex items-end justify-between gap-6">
-        <p className="kicker">Proyectos</p>
-        <a href="#contacto" className="text-sm underline underline-offset-4">
-          Trabajemos juntos
-        </a>
-      </div>
+      <p className="kicker text-black/60">[ Proyectos ]</p>
       <div className="mt-7 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {proyectos.map((proyecto) => (
           <article key={proyecto.name} className="project-card rounded-2xl p-5">

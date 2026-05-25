@@ -20,9 +20,9 @@ export const portfolioEs = {
   about: {
     title: "Sobre mí",
     paragraphs: [
-      "Soy desarrollador web Full Stack y actualmente me desempeño como Co-Founder y Frontend Lead en Tech With Soul.",
-      "Mi enfoque combina código limpio, decisiones técnicas estratégicas y una mirada de producto para conectar objetivos comerciales con experiencias de usuario memorables.",
-      "Evito la sobreingeniería: priorizo soluciones sólidas, mantenibles y listas para escalar con el crecimiento de cada proyecto.",
+      "Soy Full Stack Developer con una sólida especialización en Frontend. Me dedico a la construcción de plataformas digitales robustas, combinando código limpio e interfaces de alta calidad con una fuerte visión de producto.",
+      "Evito la sobreingeniería por principio. Priorizo las decisiones técnicas estratégicas para entregar soluciones que sean eficientes, mantenibles y preparadas para escalar, asegurando que la arquitectura elegida aporte valor real al proyecto.",
+      "Actualmente, aplico esta metodología y experiencia como Co-Founder y Frontend Lead en Tech With Soul, donde mi objetivo principal es conectar los requerimientos comerciales con experiencias de usuario de excelencia."
     ],
   },
   projects: [
