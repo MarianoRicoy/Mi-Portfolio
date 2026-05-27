@@ -5,11 +5,9 @@ export const portfolioEs = {
     fullName: "Mariano Federico Ricoy",
     role: "Frontend Developer",
     location: "Miramar, Buenos Aires, Argentina",
-    email: "hola@marianoricoy.dev",
+    email: "mfricoy@gmail.com",
     linkedin: "https://www.linkedin.com/in/marianoricoy",
     github: "https://github.com/marianoricoy",
-    cvLabel: "Descargar CV",
-    cvUrl: "https://www.linkedin.com/in/marianoricoy",
   },
   hero: {
     headline: "FRONTEND DEVELOPER",
@@ -20,9 +18,12 @@ export const portfolioEs = {
   about: {
     title: "Sobre mí",
     paragraphs: [
-      "Soy Full Stack Developer con una sólida especialización en Frontend. Me dedico a la construcción de plataformas digitales robustas, combinando código limpio e interfaces de alta calidad con una fuerte visión de producto.",
-      "Evito la sobreingeniería por principio. Priorizo las decisiones técnicas estratégicas para entregar soluciones que sean eficientes, mantenibles y preparadas para escalar, asegurando que la arquitectura elegida aporte valor real al proyecto.",
-      "Actualmente, aplico esta metodología y experiencia como Co-Founder y Frontend Lead en Tech With Soul, donde mi objetivo principal es conectar los requerimientos comerciales con experiencias de usuario de excelencia."
+      "Soy Full Stack Developer, especializado en Frontend. Disfruto construir productos digitales que no solo funcionen bien, sino que también se sientan bien al usarlos.",
+      "Oriundo de la costa argentina, surfista, Purple Belt de Brazilian Jiu-Jitsu (RGA) y fabricante de tablas de surf, crecí entre las olas, los videojuegos y la curiosidad por crear cosas. Con el tiempo, esa misma mezcla de creatividad, disciplina y obsesión por los detalles terminó llevándome al desarrollo.",
+      "Me enfoco en crear experiencias claras, sólidas y escalables, combinando atención al detalle visual con decisiones técnicas pensadas a largo plazo.",
+      "Creo en el código limpio, en las interfaces simples y en evitar complejidad innecesaria. Como alguna vez escuché: una buena solución no es la más rebuscada, sino la que resuelve el problema de forma eficiente, mantenible y alineada con los objetivos reales.",
+      "Me dedico a aprender constantemente todo lo relacionado con el desarrollo digital, porque realmente es un mundo que me apasiona. Además del desarrollo web, también estoy incursionando en la creación de videojuegos, otra pasión que estoy transformando en un proyecto real.",
+      "Actualmente me desempeño como Co-Founder y Frontend Lead en Tech With Soul, donde trabajo conectando necesidades de negocio con experiencias digitales de alta calidad.",
     ],
   },
   projects: [

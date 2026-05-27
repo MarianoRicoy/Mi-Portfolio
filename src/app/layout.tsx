@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GeistMono } from "geist/font/mono";
 import { Bebas_Neue, Manrope } from "next/font/google";
 import "./globals.css";
 
@@ -27,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${headingFont.variable} ${bodyFont.variable} h-full antialiased`}
+      className={`${headingFont.variable} ${bodyFont.variable} ${GeistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

@@ -5,8 +5,6 @@ export type PersonaPortfolio = {
   email: string;
   linkedin: string;
   github: string;
-  cvLabel: string;
-  cvUrl: string;
 };
 
 export type HeroPortfolio = {

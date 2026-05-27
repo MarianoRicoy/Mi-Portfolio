@@ -1,7 +1,8 @@
 import { portfolioEs } from "@/data/portfolio-es";
+import { Navbar } from "@/components/navbar";
 import {
-  SeccionPortada,
   SeccionHero,
+  SeccionPresentacion,
   SeccionSobreMi,
   SeccionProyectos,
   SeccionExperiencia,
@@ -14,7 +15,6 @@ export default function Home() {
     hero,
     about: sobreMi,
     projects: proyectos,
-    // skills: habilidades, // Eliminado - TechStack en SeccionSobreMi cubre las tecnologías
     experience: experiencia,
     education: formacion,
     contact: contacto,
@@ -22,12 +22,11 @@ export default function Home() {
 
   return (
     <div className="pb-18">
-      {/* 1. Foto Gigante de Portada al inicio con Sobre mí superpuesto opcional */}
-      <SeccionPortada nombrePersona={persona.fullName} sobreMi={sobreMi} />
+      <Navbar personName="Mariano F. Ricoy Portfolio" />
 
-      {/* 2. El resto de las secciones en la grilla principal */}
-      <main className="section-shell flex flex-col gap-22 md:gap-28 mt-22 md:mt-28">
+      <main className="section-shell flex flex-col gap-22 md:gap-28 pt-20 md:pt-24">
         <SeccionHero hero={hero} />
+        <SeccionPresentacion sobreMi={sobreMi} />
         <SeccionSobreMi />
         <SeccionProyectos proyectos={proyectos} />
         <SeccionExperiencia experiencia={experiencia} formacion={formacion} />
