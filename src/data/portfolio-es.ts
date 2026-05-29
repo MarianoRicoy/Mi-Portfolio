@@ -3,14 +3,14 @@ import type { PortfolioData } from "@/types/portfolio";
 export const portfolioEs = {
   person: {
     fullName: "Mariano Federico Ricoy",
-    role: "Frontend Developer",
+    role: "Fullstack Developer",
     location: "Miramar, Buenos Aires, Argentina",
     email: "mfricoy@gmail.com",
     linkedin: "https://www.linkedin.com/in/marianoricoy",
     github: "https://github.com/marianoricoy",
   },
   hero: {
-    headline: "FRONTEND DEVELOPER",
+    headline: "FULLSTACK DEVELOPER",
     sideLabels: ["DISEÑO WEB (UX/UI)", "DESARROLLO WEB"],
     summary:
       "Transformo ideas en experiencias digitales robustas, escalables y enfocadas en resultados de negocio.",
