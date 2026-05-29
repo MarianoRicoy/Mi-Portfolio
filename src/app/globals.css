@@ -141,14 +141,20 @@ a {
   width: min(560px, 100%);
   margin-inline: auto;
   text-align: center;
+}
+
+/* ── Animación renglon a renglon por scroll ── */
+
+.pres-line {
   opacity: 0;
-  transform: translateY(0.75rem);
+  transform: translateY(1.1rem);
   transition:
     opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  /* transition-delay se asigna inline desde JS */
 }
 
-.presentacion-section--visible .presentacion-copy {
+.pres-line--visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -181,15 +187,13 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .presentacion-copy {
-    transition: none;
-  }
-
-  .presentacion-section--visible .presentacion-copy {
+  .pres-line {
     opacity: 1;
     transform: none;
+    transition: none;
   }
 }
+
 
 .hero-poster-section {
   min-height: calc(100dvh - 5.5rem);

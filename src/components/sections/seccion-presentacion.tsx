@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { SobreMiPortfolio } from "@/types/portfolio";
 
 type SeccionPresentacionProps = {
@@ -20,32 +20,63 @@ function renderParagraph(text: string) {
   );
 }
 
-export function SeccionPresentacion({ sobreMi }: SeccionPresentacionProps) {
-  const [isVisible, setIsVisible] = useState(false);
+function AnimatedLine({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
-    const onScroll = () => {
-      if (window.scrollY > 48) setIsVisible(true);
-    };
+    const el = ref.current;
+    if (!el) return;
 
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.style.transitionDelay = `${delay}ms`;
+          el.classList.add("pres-line--visible");
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.15 }
+    );
 
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [delay]);
+
+  return (
+    <p ref={ref} className={`pres-line ${className}`}>
+      {children}
+    </p>
+  );
+}
+
+export function SeccionPresentacion({ sobreMi }: SeccionPresentacionProps) {
   return (
     <section
       id="sobre-mi"
-      className={`presentacion-section line-divider${isVisible ? " presentacion-section--visible" : ""}`}
+      className="presentacion-section line-divider"
       aria-label="Presentación personal"
     >
       <div className="presentacion-copy">
-        <p className="presentacion-greeting">Hola, soy Mariano.</p>
+        <AnimatedLine className="presentacion-greeting">
+          Hola, soy Mariano.
+        </AnimatedLine>
 
         {sobreMi.paragraphs.map((paragraph, index) => (
-          <p key={`${index}-${paragraph.slice(0, 24)}`} className="presentacion-paragraph">
+          <AnimatedLine
+            key={`${index}-${paragraph.slice(0, 24)}`}
+            className="presentacion-paragraph"
+            delay={0}
+          >
             {renderParagraph(paragraph)}
-          </p>
+          </AnimatedLine>
         ))}
       </div>
     </section>
