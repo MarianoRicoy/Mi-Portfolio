@@ -28,28 +28,33 @@ export const portfolioEs = {
   },
   projects: [
     {
-      name: "Plataforma institucional TWS",
-      description:
-        "Arquitectura frontend y experiencia de marca para la plataforma institucional de Tech With Soul.",
-      stack: ["Next.js", "TypeScript", "Tailwind CSS"],
-      liveUrl: "https://www.linkedin.com/in/marianoricoy",
-      repoUrl: "https://github.com/marianoricoy",
+      name: "T W S -Tech With Soul-",
+      cover: "/proyectoUno/fotoUno.png",
+      video: "/proyectoUno/demo tws website.mp4",
+      marqueeImages: [
+        "/proyectoUno/fotoDos.png",
+        "/proyectoUno/fotoTres.png",
+        "/proyectoUno/fotoCuatro.png",
+      ],
     },
     {
-      name: "Dashboard para clientes",
-      description:
-        "Interfaz modular para centralizar métricas, tareas y flujos de trabajo de clientes en crecimiento.",
-      stack: ["React", "TypeScript", "Design System"],
-      liveUrl: "https://www.linkedin.com/in/marianoricoy",
-      repoUrl: "https://github.com/marianoricoy",
+      name: "Sukha - Papeleria Creativa -",
+      cover: "/proyectoDos/fotoUno.png",
+      video: "/proyectoDos/demo sukha website.mp4",
+      marqueeImages: [
+        "/proyectoDos/fotoDos.png",
+        "/proyectoDos/fotoTres.png",
+        "/proyectoDos/fotoCuatro.png",
+      ],
     },
     {
-      name: "Landing de alto rendimiento",
-      description:
-        "Landing orientada a conversión con optimización de performance, SEO técnico y estructura escalable.",
-      stack: ["Next.js", "SEO", "Web Performance"],
-      liveUrl: "https://www.linkedin.com/in/marianoricoy",
-      repoUrl: "https://github.com/marianoricoy",
+      name: "Coral bjj Studio",
+      cover: "/proyectoTres/fotoUno.png",
+      video: "/proyectoTres/demo coral website (online-video-cutter.com).mp4",
+      marqueeImages: [
+        "/proyectoTres/fotoDos.png",
+        "/proyectoTres/fotoTres.png",
+      ],
     },
   ],
   skills: {

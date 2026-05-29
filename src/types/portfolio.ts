@@ -20,10 +20,9 @@ export type SobreMiPortfolio = {
 
 export type ProyectoPortfolio = {
   name: string;
-  description: string;
-  stack: readonly string[];
-  liveUrl: string;
-  repoUrl: string;
+  cover: string;
+  video: string;
+  marqueeImages: readonly string[];
 };
 
 export type HabilidadesPortfolio = {

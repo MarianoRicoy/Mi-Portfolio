@@ -48,10 +48,10 @@ a {
   left: 0;
   width: 100%;
   z-index: 80;
-  transition: 
-    background 300ms ease, 
-    border-color 300ms ease, 
-    backdrop-filter 300ms ease, 
+  transition:
+    background 300ms ease,
+    border-color 300ms ease,
+    backdrop-filter 300ms ease,
     color 300ms ease,
     opacity 350ms cubic-bezier(0.16, 1, 0.3, 1),
     transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -61,10 +61,13 @@ a {
   position: fixed;
   top: 0;
   left: 0;
-  background: rgba(233, 233, 228, 0.75); /* Fondo hueso claro semi-translúcido para fundirse con --background */
-  backdrop-filter: blur(12px) saturate(110%); /* Efecto vidrio (blur) premium muy sutil */
+  background: rgba(233, 233, 228, 0.75);
+  /* Fondo hueso claro semi-translúcido para fundirse con --background */
+  backdrop-filter: blur(12px) saturate(110%);
+  /* Efecto vidrio (blur) premium muy sutil */
   -webkit-backdrop-filter: blur(12px) saturate(110%);
-  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 7%, transparent); /* Línea inferior sutil */
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 7%, transparent);
+  /* Línea inferior sutil */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
 }
 
@@ -298,6 +301,7 @@ h1.hero-poster-title {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-100%);
   }
@@ -332,23 +336,190 @@ h1.hero-poster-title {
   text-wrap: pretty;
 }
 
-.project-card {
-  background: color-mix(in srgb, var(--surface) 88%, white);
-  border: 1px solid color-mix(in srgb, var(--line) 18%, transparent);
-  transition: transform 180ms ease, border-color 180ms ease;
+/* ── SECCIÓN PROYECTOS: FLIP CARDS ── */
+
+.proj-flip-card {
+  perspective: 1000px;
+  width: 100%;
+  aspect-ratio: 4 / 3;
 }
 
-.project-card:hover {
-  transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--line) 40%, transparent);
+.proj-flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.project-visual {
-  background:
-    linear-gradient(140deg, rgba(255, 255, 255, 0.24), transparent 50%),
-    radial-gradient(circle at 16% 20%, rgba(255, 255, 255, 0.2), transparent 40%),
-    var(--surface-dark);
+.proj-flip-card:hover .proj-flip-inner {
+  transform: rotateY(180deg);
 }
+
+.proj-flip-front,
+.proj-flip-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.875rem;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.proj-flip-front {
+  background: var(--surface);
+}
+
+.proj-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.proj-flip-back {
+  transform: rotateY(180deg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.proj-back-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.proj-back-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.58);
+}
+
+.proj-back-title {
+  position: relative;
+  z-index: 1;
+  color: #e9e9e4;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
+  padding: 0 1.25rem;
+}
+
+/* ── MODAL DE PROYECTO ── */
+
+.proj-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(233, 233, 228, 0.82);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.proj-modal-box {
+  position: relative;
+  width: min(860px, 100%);
+  max-height: 90dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border-radius: 1.125rem;
+  border: 1px solid rgba(17, 18, 24, 0.1);
+  background: rgba(233, 233, 228, 0.96);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);
+}
+
+.proj-modal-close {
+  position: absolute;
+  top: 0.875rem;
+  right: 0.875rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 18, 24, 0.15);
+  background: rgba(255, 255, 255, 0.6);
+  color: rgba(17, 18, 24, 0.7);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.proj-modal-close:hover {
+  background: rgba(17, 18, 24, 0.1);
+  color: #111218;
+}
+
+.proj-modal-video-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(17, 18, 24, 0.1);
+}
+
+.proj-modal-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* ── MARQUEE DEL MODAL ── */
+
+.proj-marquee-wrap {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  gap: 0;
+  border-top: 1px solid rgba(17, 18, 24, 0.1);
+  padding-top: 1rem;
+}
+
+.proj-marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  min-width: 100%;
+  gap: 1rem;
+  animation: proj-scroll 22s linear infinite;
+  padding-right: 1rem;
+}
+
+.proj-marquee-item {
+  width: 220px;
+  height: 145px;
+  flex-shrink: 0;
+  border-radius: 0.625rem;
+  overflow: hidden;
+  border: 1px solid rgba(17, 18, 24, 0.1);
+}
+
+.proj-marquee-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@keyframes proj-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
 
 .chip {
   border: 1px solid color-mix(in srgb, var(--line) 20%, transparent);
@@ -356,6 +527,7 @@ h1.hero-poster-title {
   font-size: 0.78rem;
   border-radius: 999px;
 }
+
 
 .contact-panel {
   background:
