@@ -66,7 +66,7 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
           {/* Contenedor centralizado para los textos y botones */}
           <div className="flex-1 flex flex-col items-center text-center z-10 w-full">
             
-            <h2 className="font-serif text-[clamp(3.5rem,8vw,6.5rem)] text-black/92 leading-none mb-6 tracking-tight">
+            <h2 className="font-serif text-[clamp(2.5rem,5vw,4.5rem)] text-black/92 leading-none mb-6 tracking-tight">
               Trabajemos <em className="italic font-light">juntos.</em>
             </h2>
             
