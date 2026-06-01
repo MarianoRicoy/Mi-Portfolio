@@ -16,9 +16,9 @@ const bodyFont = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Mariano Ricoy | Fullstack Developer",
+  title: "Mariano F. Ricoy | Fullstack Developer",
   description:
-    "Portfolio personal de Mariano Ricoy, Fullstack Developer y Co-Founder en Tech With Soul.",
+    "Portfolio personal de Mariano F. Ricoy, Fullstack Developer y Co-Founder en Tech With Soul.",
 };
 
 export default function RootLayout({
