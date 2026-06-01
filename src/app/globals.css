@@ -566,97 +566,29 @@ h1.hero-poster-title {
   border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
 }
 
-.ctc-layout {
+.contact-panel-layout {
   display: flex;
   flex-direction: column;
-  position: relative;
-  min-height: 500px;
+  gap: 1.5rem;
 }
 
 @media (min-width: 768px) {
-  .ctc-layout {
+  .contact-panel-layout {
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: clamp(1.5rem, 4vw, 3rem);
   }
 }
 
-.ctc-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 3rem 1.5rem;
-  z-index: 10;
-}
-
-@media (min-width: 768px) {
-  .ctc-content {
-    padding: 4rem 2rem;
-  }
-}
-
-.ctc-title {
-  font-size: clamp(3rem, 8vw, 6rem);
-  line-height: 1.1;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--foreground);
-  margin-bottom: 2rem;
-}
-
-.ctc-title-em {
-  font-style: italic;
-  font-weight: 400;
-  color: color-mix(in srgb, var(--foreground) 90%, transparent);
-}
-
-.ctc-sub {
-  font-size: clamp(1rem, 1.2vw, 1.1rem);
-  line-height: 1.6;
-  max-width: 600px;
-  color: color-mix(in srgb, var(--foreground) 75%, transparent);
-  margin-bottom: 3rem;
-  text-wrap: balance;
-}
-
-.ctc-identity {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  margin-bottom: 3rem;
-}
-
-.ctc-name {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: var(--foreground);
-}
-
-.ctc-email {
-  font-size: 1.1rem;
-  color: color-mix(in srgb, var(--foreground) 80%, transparent);
-  transition: color 0.2s ease;
-}
-
-.ctc-email:hover {
-  color: var(--foreground);
-}
-
-.ctc-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
+.contact-panel-content {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .contacto-avatar-figure {
   --avatar-h: clamp(280px, 34vw, 390px);
-  position: absolute;
-  right: 0;
-  bottom: 0;
+  flex: 0 0 auto;
   height: var(--avatar-h);
   width: calc(var(--avatar-h) * 301.5 / 959.66);
   background-image: url("/1.svg");
@@ -665,7 +597,6 @@ h1.hero-poster-title {
   background-position: calc(var(--avatar-h) * -243.36 / 959.66) calc(var(--avatar-h) * -1658 / 959.66);
   pointer-events: none;
   user-select: none;
-  opacity: 0.7;
 }
 
 .contacto-accion {

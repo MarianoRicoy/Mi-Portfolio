@@ -63,7 +63,7 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
         <div className="contact-panel-content">
           <p className="kicker text-black/60">[ {contacto.title} ]</p>
           <h2 className="title-display mt-4 text-[clamp(2.3rem,7vw,5rem)] text-black/92">
-            {persona.fullName}
+            Trabajemos juntos.
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-black/74">{contacto.description}</p>
           <div className="mt-8 flex flex-wrap gap-4 text-sm">
