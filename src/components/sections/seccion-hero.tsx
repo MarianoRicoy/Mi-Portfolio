@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import type { HeroPortfolio } from "@/types/portfolio";
+import { useMouseRotation } from "@/hooks/use-mouse-rotation";
 
 type SeccionHeroProps = {
   hero: HeroPortfolio;
@@ -13,6 +15,8 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
   const [displayedSummary, setDisplayedSummary] = useState("");
   const [displayedLabel1, setDisplayedSummaryLabel1] = useState("");
   const [displayedLabel2, setDisplayedSummaryLabel2] = useState("");
+  
+  const { rotateX, rotateY, handleMouseMove, handleMouseLeave } = useMouseRotation(18);
 
   const fullSummary = hero.summary;
   const label1Text = hero.sideLabels[0] ? `/${hero.sideLabels[0]}` : "";
@@ -66,14 +70,23 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
   return (
     <section id="hero" className="hero-poster-section pt-14 md:pt-20">
       <div className="hero-poster-composition">
-        <div className="flex flex-col justify-center max-w-[50%] shrink-0">
-          <h1 className="title-display hero-poster-title">
+        <div className="flex flex-col justify-center max-w-[50%] shrink-0" style={{ perspective: 1200 }}>
+          <motion.h1 
+            className="title-display hero-poster-title"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{ 
+              rotateX, 
+              rotateY,
+              transformStyle: "preserve-3d"
+            }}
+          >
             {hero.headline.split(/\s+/).map((word) => (
-              <span key={word} className="hero-poster-title-line">
+              <span key={word} className="hero-poster-title-line inline-block origin-center" style={{ transform: "translateZ(20px)" }}>
                 {word}
               </span>
             ))}
-          </h1>
+          </motion.h1>
 
           <p className="hero-summary max-w-xl text-base leading-relaxed md:text-lg font-light text-black/82">
             <span>{displayedSummary}</span>
