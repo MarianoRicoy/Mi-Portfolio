@@ -67,20 +67,27 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
               Trabajemos juntos.
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-black/74">{contacto.description}</p>
-          <div className="mt-8 flex flex-wrap gap-4 text-sm">
-            <button
-              type="button"
-              className="contacto-accion"
-              onClick={() => setModalAbierto(true)}
-            >
-              {contacto.cta}
-            </button>
-            <a href={persona.linkedin} className="contacto-accion" target="_blank" rel="noreferrer">
-              LinkedIn
-            </a>
-            <a href={persona.github} className="contacto-accion" target="_blank" rel="noreferrer">
-              GitHub
-            </a>
+          <div className="mt-12 flex flex-col gap-8">
+            <div className="flex flex-col gap-1">
+              <span className="text-xl font-medium tracking-tight text-black/90">
+                {persona.fullName}
+              </span>
+              <a
+                href={`mailto:${persona.email}`}
+                className="text-xl text-black/70 hover:text-black transition-colors"
+              >
+                {persona.email}
+              </a>
+            </div>
+            
+            <div className="flex flex-wrap gap-4 text-sm">
+              <a href={persona.linkedin} className="contacto-accion" target="_blank" rel="noreferrer">
+                LinkedIn
+              </a>
+              <a href={persona.github} className="contacto-accion" target="_blank" rel="noreferrer">
+                GitHub
+              </a>
+            </div>
           </div>
         </div>
 
