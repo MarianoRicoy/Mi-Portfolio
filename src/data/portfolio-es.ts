@@ -31,16 +31,22 @@ export const portfolioEs = {
       name: "T W S -Tech With Soul-",
       cover: "/proyectoUno/fotoUno.png",
       video: "/proyectoUno/demo tws website.mp4",
+      description:
+        "TWS (Tech With Soul) — Plataforma Corporativa. Diseño e implementación del sitio web oficial para TWS, concebido para posicionar a la empresa como un socio tecnológico estratégico para negocios en crecimiento. La arquitectura del proyecto es una 'one-page expandida' que ofrece una experiencia de usuario de alto nivel.",
       marqueeImages: [
         "/proyectoUno/fotoDos.png",
         "/proyectoUno/fotoTres.png",
         "/proyectoUno/fotoCuatro.png",
+        "/proyectoUno/fotoCinco.png",
+        "/proyectoUno/fotoSeis.png",
       ],
     },
     {
       name: "Sukha - Papeleria Creativa -",
       cover: "/proyectoDos/fotoUno.png",
       video: "/proyectoDos/demo sukha website.mp4",
+      description:
+        "Aplicación web Full-Stack desarrollada a medida para SUKHA Papelería Creativa. Soluciona la falta de control administrativo digitalizando un extenso catálogo y automatizando el cálculo de rentabilidad, logrando que la dueña sepa con exactitud qué vende y cuánto factura. Stack: React · Tailwind CSS · Node.js · Express · Supabase.",
       marqueeImages: [
         "/proyectoDos/fotoDos.png",
         "/proyectoDos/fotoTres.png",
@@ -51,6 +57,8 @@ export const portfolioEs = {
       name: "Coral bjj Studio",
       cover: "/proyectoTres/fotoUno.png",
       video: "/proyectoTres/demo coral website (online-video-cutter.com).mp4",
+      description:
+        "Desarrollo de una plataforma digital integral para una academia de Jiu Jitsu. El proyecto combina una web institucional con fuerte identidad visual ('estética coral') y una tienda online enfocada en la venta de su merchandising oficial.",
       marqueeImages: [
         "/proyectoTres/fotoDos.png",
         "/proyectoTres/fotoTres.png",

@@ -22,6 +22,7 @@ export type ProyectoPortfolio = {
   name: string;
   cover: string;
   video: string;
+  description: string;
   marqueeImages: readonly string[];
 };
 

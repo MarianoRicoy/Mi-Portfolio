@@ -31,14 +31,6 @@ function ModalProyecto({
     };
   }, [onClose]);
 
-  // Duplicar imágenes del marquee para loop continuo sin saltos
-  const imgsMarquee = [
-    ...proyecto.marqueeImages,
-    ...proyecto.marqueeImages,
-    ...proyecto.marqueeImages,
-    ...proyecto.marqueeImages,
-  ];
-
   return (
     <div
       className="proj-modal-overlay"
@@ -77,17 +69,20 @@ function ModalProyecto({
           />
         </div>
 
-        {/* Marquee */}
+        {/* Descripción */}
+        <p className="proj-modal-desc">{proyecto.description}</p>
+
+        {/* Marquee — dos tracks duplicados para loop continuo sin saltos */}
         <div className="proj-marquee-wrap">
           <div className="proj-marquee-track">
-            {imgsMarquee.map((src, i) => (
+            {proyecto.marqueeImages.map((src, i) => (
               <div key={i} className="proj-marquee-item">
                 <img src={src} alt="" className="proj-marquee-img" />
               </div>
             ))}
           </div>
           <div className="proj-marquee-track" aria-hidden="true">
-            {imgsMarquee.map((src, i) => (
+            {proyecto.marqueeImages.map((src, i) => (
               <div key={i} className="proj-marquee-item">
                 <img src={src} alt="" className="proj-marquee-img" />
               </div>
@@ -129,8 +124,6 @@ export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
                     className="proj-back-bg"
                     style={{ backgroundImage: `url(${proyecto.cover})` }}
                   />
-                  <div className="proj-back-overlay" />
-                  <span className="proj-back-title">{proyecto.name}</span>
                 </div>
               </div>
             </div>

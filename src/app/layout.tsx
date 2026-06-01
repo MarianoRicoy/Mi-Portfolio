@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { GeistMono } from "geist/font/mono";
 import { Bebas_Neue, Manrope } from "next/font/google";
+import { FollowerDot } from "@/components/follower-dot";
 import "./globals.css";
 
 const headingFont = Bebas_Neue({
@@ -30,7 +31,10 @@ export default function RootLayout({
       lang="es"
       className={`${headingFont.variable} ${bodyFont.variable} ${GeistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <FollowerDot />
+        {children}
+      </body>
     </html>
   );
 }
