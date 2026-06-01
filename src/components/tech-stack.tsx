@@ -22,7 +22,7 @@ export function TechStack() {
       </p>
 
       {/* Caja contenedor con bordes y fondo claro como el original */}
-      <div className="relative w-full bg-surface/50 border border-line/5 py-8 px-6 rounded-xl overflow-hidden">
+      <div className="relative w-full bg-white/45 border border-black/15 py-8 px-6 rounded-2xl overflow-hidden">
         
         {/* Contenedor del Marquee Infinito */}
         <div className="marquee-container">
