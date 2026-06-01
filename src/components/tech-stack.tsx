@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
@@ -128,6 +130,17 @@ export function TechStack() {
               </svg>
             </button>
 
+            {/* Avatar a la izquierda */}
+            <div className="hidden md:block relative shrink-0 h-[clamp(280px,34vw,390px)] w-[calc(clamp(280px,34vw,390px)*301.5/959.66)]">
+              <Image 
+                src="/avatarMio3.svg"
+                alt="Avatar interactivo"
+                fill
+                className="object-contain object-bottom opacity-90"
+              />
+            </div>
+
+            {/* Contenido textual */}
             <div className="flex-1 flex flex-col items-center text-center z-10">
               <div className="relative w-20 h-20 md:w-24 md:h-24 mb-6">
                 <Image
@@ -143,16 +156,6 @@ export function TechStack() {
               <p className="max-w-2xl text-[clamp(1rem,1.3vw,1.1rem)] leading-relaxed text-black/80 text-balance">
                 {selectedTech.description}
               </p>
-            </div>
-
-            {/* Avatar a la derecha */}
-            <div className="hidden md:block relative shrink-0 h-[clamp(280px,34vw,390px)] w-[calc(clamp(280px,34vw,390px)*301.5/959.66)]">
-              <Image 
-                src="/avatarMio3.svg"
-                alt="Avatar interactivo"
-                fill
-                className="object-contain object-bottom opacity-90"
-              />
             </div>
           </div>
         </div>
