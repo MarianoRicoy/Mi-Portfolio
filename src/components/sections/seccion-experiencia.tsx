@@ -22,9 +22,11 @@ export function SeccionExperiencia({ experiencia, formacion }: SeccionExperienci
           </article>
         ))}
       </div>
-      <div className="mt-6 rounded-2xl border border-black/15 bg-white/45 p-5">
+      <div className="mt-10 md:mt-14">
         <p className="kicker text-black/60">[ {formacion.title} ]</p>
-        <p className="mt-3 text-sm leading-relaxed text-black/75">{formacion.item}</p>
+        <div className="mt-7 rounded-2xl border border-black/15 bg-white/45 p-5">
+          <p className="text-sm leading-relaxed text-black/75">{formacion.item}</p>
+        </div>
       </div>
     </section>
   );

@@ -59,11 +59,12 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
 
   return (
     <>
-      <section id="contacto" className="contact-panel contact-panel-layout rounded-3xl p-8 md:p-10">
-        <div className="contact-panel-content">
-          <p className="kicker text-black/60">[ {contacto.title} ]</p>
-          <h2 className="title-display mt-4 text-[clamp(2.3rem,7vw,5rem)] text-black/92">
-            Trabajemos juntos.
+      <section id="contacto" className="line-divider pt-10 md:pt-14 pb-10 md:pb-20">
+        <p className="kicker text-black/60">[ {contacto.title} ]</p>
+        <div className="mt-7 contact-panel contact-panel-layout rounded-3xl p-8 md:p-10">
+          <div className="contact-panel-content">
+            <h2 className="title-display text-[clamp(2.3rem,7vw,5rem)] text-black/92">
+              Trabajemos juntos.
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-black/74">{contacto.description}</p>
           <div className="mt-8 flex flex-wrap gap-4 text-sm">
@@ -84,6 +85,7 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
         </div>
 
         <div className="contacto-avatar-figure hidden md:block" aria-hidden="true" />
+        </div>
       </section>
 
       {modalAbierto && (
