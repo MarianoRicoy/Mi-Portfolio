@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Technology = {
   name: string;
@@ -19,7 +19,47 @@ const technologies: Technology[] = [
 
 export function TechStack() {
   const [selectedTech, setSelectedTech] = useState<Technology | null>(null);
+  const [elevatorUp, setElevatorUp] = useState(false);
+  const [avatarMounted, setAvatarMounted] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
+  const clearAllTimers = () => {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+  };
+
+  // Elevator: se activa cada vez que el usuario pasa por la sección
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        clearAllTimers();
+        if (entry.isIntersecting) {
+          // La sección es visible: montar y subir
+          setAvatarMounted(true);
+          timersRef.current.push(setTimeout(() => setElevatorUp(true), 120));
+          // Bajar automáticamente después de 5s
+          timersRef.current.push(setTimeout(() => setElevatorUp(false), 5200));
+          timersRef.current.push(setTimeout(() => setAvatarMounted(false), 6200));
+        } else {
+          // La sección salió del viewport: bajar inmediatamente
+          setElevatorUp(false);
+          timersRef.current.push(setTimeout(() => setAvatarMounted(false), 1000));
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      clearAllTimers();
+    };
+  }, []);
+
+
+  // Lock scroll when modal open
   useEffect(() => {
     if (!selectedTech) return;
     const overflowAnterior = document.body.style.overflow;
@@ -35,7 +75,7 @@ export function TechStack() {
   }, [selectedTech]);
 
   return (
-    <div className="w-full mt-10 md:mt-12 overflow-hidden">
+    <div ref={sectionRef} className="w-full mt-10 md:mt-12 relative">
       {/* Etiqueta respetando el design system */}
       <p className="text-[0.74rem] tracking-[0.16em] uppercase font-bold text-black/60 mb-8">
         [ Stack Tecnológico ]
@@ -43,10 +83,10 @@ export function TechStack() {
 
       {/* Caja contenedor con bordes y fondo claro como el original */}
       <div className="relative w-full bg-white/45 border border-black/15 py-8 px-6 rounded-2xl overflow-hidden">
-        
+
         {/* Contenedor del Marquee Infinito */}
         <div className="marquee-container">
-          
+
           {/* Bloque 1 de la tira */}
           <div className="marquee-content">
             {technologies.map((tech, index) => (
@@ -105,14 +145,81 @@ export function TechStack() {
         </div>
       </div>
 
-      {/* Modal interactivo */}
+      {/* Elevator Avatar — aparece cada vez que el usuario pasa por esta sección */}
+      {avatarMounted && (
+        <div
+          aria-hidden="true"
+          className="hidden lg:flex flex-col items-center pointer-events-none"
+          style={{
+            position: "absolute",
+            left: "calc((100vw - min(1120px, 92vw)) / -4 - 110px)",
+            top: "0px",
+            zIndex: 40,
+            transition: "transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease",
+            transform: elevatorUp ? "translateY(0)" : "translateY(120px)",
+            opacity: elevatorUp ? 1 : 0,
+          }}
+        >
+          {/* Globo de conversación */}
+          <div
+            style={{
+              position: "relative",
+              background: "rgba(255,255,255,0.88)",
+              backdropFilter: "blur(8px)",
+              border: "1px solid rgba(0,0,0,0.1)",
+              borderRadius: "0.9rem",
+              padding: "0.6rem 0.9rem",
+              marginLeft: "0.6rem",
+              marginBottom: "0.5rem",
+              maxWidth: 220,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                lineHeight: 1.5,
+                color: "rgba(0,0,0,0.65)",
+                margin: 0,
+              }}
+            >
+              Hace doble click sobre los stacks para saber mas !
+            </p>
+            {/* Triángulo apuntando hacia abajo (al avatar) */}
+            <span
+              style={{
+                position: "absolute",
+                bottom: -8,
+                left: 24,
+                width: 0,
+                height: 0,
+                borderLeft: "8px solid transparent",
+                borderRight: "8px solid transparent",
+                borderTop: "8px solid rgba(255,255,255,0.88)",
+              }}
+            />
+          </div>
+
+          {/* Avatar */}
+          <div style={{ position: "relative", width: 130, height: 210, mixBlendMode: "multiply" }}>
+            <Image
+              src="/avatarMio4.svg"
+              alt="Hint avatar"
+              fill
+              className="object-contain object-bottom"
+            />
+          </div>
+        </div>
+      )}
+
       {selectedTech && (
-        <div 
+        <div
           className="fixed inset-0 z-50 bg-black/20 backdrop-blur-[2px] flex items-center justify-center p-4 md:p-8"
           onClick={() => setSelectedTech(null)}
           role="presentation"
         >
-          <div 
+          <div
             className="relative w-full max-w-4xl bg-white/45 backdrop-blur-xl border border-black/15 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-10 overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
@@ -132,7 +239,7 @@ export function TechStack() {
 
             {/* Avatar a la izquierda */}
             <div className="hidden md:block relative shrink-0 h-[clamp(280px,34vw,390px)] w-[calc(clamp(280px,34vw,390px)*301.5/959.66)]">
-              <Image 
+              <Image
                 src="/avatarMio3.svg"
                 alt="Avatar interactivo"
                 fill
