@@ -160,29 +160,10 @@ export function TechStack() {
         >
           {/* Globo de conversación */}
           <div
-            style={{
-              position: "relative",
-              background: "rgba(255,255,255,0.88)",
-              backdropFilter: "blur(8px)",
-              border: "1px solid rgba(0,0,0,0.1)",
-              borderRadius: "0.9rem",
-              padding: "0.6rem 0.9rem",
-              marginLeft: "0.6rem",
-              marginBottom: "0.5rem",
-              maxWidth: 220,
-              boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-            }}
+            className="relative max-w-[220px] rounded-[0.9rem] px-[0.9rem] py-[0.6rem] ml-[0.6rem] mb-[0.5rem] bg-white/45 backdrop-blur-xl border border-black/15 shadow-xl"
           >
-            <p
-              style={{
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                lineHeight: 1.5,
-                color: "rgba(0,0,0,0.65)",
-                margin: 0,
-              }}
-            >
-              Hace doble click sobre los stacks para saber mas !
+            <p className="text-[0.75rem] font-semibold leading-relaxed text-black/80 m-0">
+              ¡Hacé doble clic sobre los stacks para saber más!
             </p>
             {/* Triángulo apuntando hacia abajo (al avatar) */}
             <span
@@ -194,7 +175,7 @@ export function TechStack() {
                 height: 0,
                 borderLeft: "8px solid transparent",
                 borderRight: "8px solid transparent",
-                borderTop: "8px solid rgba(255,255,255,0.88)",
+                borderTop: "8px solid rgba(255,255,255,0.45)",
               }}
             />
           </div>
