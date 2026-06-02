@@ -19,7 +19,7 @@ export const portfolioEs = {
     title: "Sobre mí",
     paragraphs: [
       "Soy Full Stack Developer, especializado en Frontend. Disfruto construir productos digitales que no solo funcionen bien, sino que también se sientan bien al usarlos.",
-      "Oriundo de la costa argentina, surfista de alma, Purple Belt BJJ (RGA), gamer y fabricante de tablas de surf. Crecí entre las olas, los videojuegos y la curiosidad por crear cosas. Con el tiempo, esa misma mezcla de creatividad, disciplina y obsesión por los detalles terminó llevándome al desarrollo.",
+      "Oriundo de la costa argentina, surfista y fabricante de tablas de surf. Crecí entre las olas, la naturaleza y la curiosidad por crear cosas. Con el tiempo, esa misma mezcla de creatividad, disciplina y obsesión por los detalles terminó llevándome al desarrollo.",
       "Me enfoco en crear experiencias claras, sólidas y escalables, combinando atención al detalle visual con decisiones técnicas pensadas a largo plazo.",
       "Creo en el código limpio, en las interfaces simples y en evitar complejidad innecesaria. Como alguna vez escuché: una buena solución no es la más rebuscada, sino la que resuelve el problema de forma eficiente, mantenible y alineada con los objetivos reales.",
       "Mi enfoque exige una evolución constante dentro del ecosistema digital para construir soluciones cada vez mejores. Más allá de mi especialización en desarrollo web, actualmente estoy expandiendo mi stack técnico hacia la industria de los videojuegos, materializando esta iniciativa en un proyecto en etapa de producción.",

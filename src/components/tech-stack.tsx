@@ -40,9 +40,7 @@ export function TechStack() {
           // La sección es visible: montar y subir
           setAvatarMounted(true);
           timersRef.current.push(setTimeout(() => setElevatorUp(true), 120));
-          // Bajar automáticamente después de 5s
-          timersRef.current.push(setTimeout(() => setElevatorUp(false), 5200));
-          timersRef.current.push(setTimeout(() => setAvatarMounted(false), 6200));
+          // Bajar automáticamente después de 5s (ELIMINADO: ahora se queda hasta hacer scroll)
         } else {
           // La sección salió del viewport: bajar inmediatamente
           setElevatorUp(false);
