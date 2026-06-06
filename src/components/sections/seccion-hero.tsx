@@ -12,18 +12,30 @@ type SeccionHeroProps = {
 
 export function SeccionHero({ hero }: SeccionHeroProps) {
   const hasTypedRef = useRef(false);
+  const [heroReady, setHeroReady] = useState(false);
   const [displayedSummary, setDisplayedSummary] = useState("");
   const [displayedLabel1, setDisplayedSummaryLabel1] = useState("");
   const [displayedLabel2, setDisplayedSummaryLabel2] = useState("");
-  
+
   const { rotateX, rotateY, handleMouseMove, handleMouseLeave } = useMouseRotation(18);
 
   const fullSummary = hero.summary;
   const label1Text = hero.sideLabels[0] ? `/${hero.sideLabels[0]}` : "";
   const label2Text = hero.sideLabels[1] ? `/${hero.sideLabels[1]}` : "";
 
+  // Espera que el navbar termine de escribir su nombre
   useEffect(() => {
-    if (hasTypedRef.current) return;
+    const handler = () => {
+      // Pequeña pausa dramática tras el navbar antes de revelar el hero
+      setTimeout(() => setHeroReady(true), 120);
+    };
+    window.addEventListener("navbarTypingDone", handler);
+    return () => window.removeEventListener("navbarTypingDone", handler);
+  }, []);
+
+  // Arrancan los typewriters del hero solo cuando heroReady = true
+  useEffect(() => {
+    if (!heroReady || hasTypedRef.current) return;
     hasTypedRef.current = true;
 
     let summaryIndex = 0;
@@ -59,24 +71,32 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
     }, typingInterval);
 
     return () => clearInterval(summaryTimer);
-  }, [fullSummary, label1Text, label2Text]);
+  }, [heroReady, fullSummary, label1Text, label2Text]);
 
-  const showSummaryCursor = displayedSummary.length < fullSummary.length;
+  const showSummaryCursor = displayedSummary.length < fullSummary.length && heroReady;
   const showLabel1Cursor =
     displayedSummary.length === fullSummary.length && displayedLabel1.length < label1Text.length;
   const showLabel2Cursor =
     displayedLabel1.length === label1Text.length && displayedLabel2.length < label2Text.length;
 
   return (
-    <section id="hero" className="hero-poster-section pt-14 md:pt-20">
+    <section
+      id="hero"
+      className="hero-poster-section pt-14 md:pt-20"
+      style={{
+        opacity: heroReady ? 1 : 0,
+        transform: heroReady ? "translateY(0)" : "translateY(8px)",
+        transition: "opacity 500ms ease, transform 500ms ease",
+      }}
+    >
       <div className="hero-poster-composition">
         <div className="flex flex-col justify-center max-w-[50%] shrink-0" style={{ perspective: 1200 }}>
-          <motion.h1 
+          <motion.h1
             className="title-display hero-poster-title"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            style={{ 
-              rotateX, 
+            style={{
+              rotateX,
               rotateY,
               transformStyle: "preserve-3d"
             }}

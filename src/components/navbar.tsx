@@ -21,25 +21,43 @@ function scrollToCenter(id: string) {
 }
 
 export function Navbar({ personName, proyectos }: NavbarProps) {
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled]       = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [displayedName, setDisplayedName] = useState("");
 
+  // Scroll listener
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Siempre arriba al cargar/recargar la página
+  // Siempre arriba al cargar/recargar
   useEffect(() => {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
   }, []);
 
+  // Typewriter del nombre → al terminar avisa al resto de la página
+  useEffect(() => {
+    let index = 0;
+    const timer = setInterval(() => {
+      if (index < personName.length) {
+        setDisplayedName(personName.slice(0, index + 1));
+        index++;
+      } else {
+        clearInterval(timer);
+        window.dispatchEvent(new CustomEvent("navbarTypingDone"));
+      }
+    }, 38);
+    return () => clearInterval(timer);
+  }, [personName]);
+
+  const isTyping = displayedName.length < personName.length;
+
   const handleOpenProject = (proyecto: ProyectoPortfolio) => {
     setDropdownOpen(false);
     scrollToCenter("proyectos");
-    // Pequeño delay para que el scroll ocurra antes de abrir el modal
     setTimeout(() => {
       window.dispatchEvent(
         new CustomEvent("openProject", { detail: proyecto.name })
@@ -51,7 +69,8 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
     <header id="navbar" className="navbar navbar--sticky">
       <nav className="navbar-inner" aria-label="Navegación principal">
         <p className="navbar-brand" aria-label={personName}>
-          {personName}
+          {displayedName}
+          {isTyping && <span className="navbar-brand-cursor" aria-hidden="true" />}
         </p>
 
         <ul className="navbar-links">
