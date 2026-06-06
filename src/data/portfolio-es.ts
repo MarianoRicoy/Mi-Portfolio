@@ -20,7 +20,7 @@ export const portfolioEs = {
     paragraphs: [
       "Soy Full Stack Developer, especializado en Frontend. Disfruto construir productos digitales que no solo funcionen bien, sino que también se sientan bien al usarlos.",
       "Oriundo de la costa argentina, surfista y fabricante de tablas de surf. Crecí entre las olas, la naturaleza y la curiosidad por crear cosas. Con el tiempo, esa misma mezcla de creatividad, disciplina y obsesión por los detalles terminó llevándome al desarrollo.",
-      "Me enfoco en crear experiencias claras, sólidas y escalables, combinando atención al detalle visual con decisiones técnicas pensadas a largo plazo.",
+      "Me dedico a crear experiencias claras, sólidas y escalables, combinando atención al detalle visual con decisiones técnicas pensadas a largo plazo.",
       "Creo en el código limpio, en las interfaces simples y en evitar complejidad innecesaria. Como alguna vez escuché: una buena solución no es la más rebuscada, sino la que resuelve el problema de forma eficiente, mantenible y alineada con los objetivos reales.",
       "Mi enfoque exige una evolución constante dentro del ecosistema digital para construir soluciones cada vez mejores. Más allá de mi especialización en desarrollo web, actualmente estoy expandiendo mi stack técnico hacia la industria de los videojuegos, materializando esta iniciativa en un proyecto en etapa de producción.",
       "Actualmente me desempeño como Co-Founder y Frontend Lead en Tech With Soul, donde trabajo conectando necesidades de negocio con experiencias digitales de alta calidad.",
