@@ -6,7 +6,7 @@ export const portfolioEs = {
     role: "Fullstack Developer",
     location: "Miramar, Buenos Aires, Argentina",
     email: "mfricoy@gmail.com",
-    linkedin: "https://www.linkedin.com/in/marianoricoy",
+    linkedin: "https://www.linkedin.com/in/mariano-ricoy",
     github: "https://github.com/marianoricoy",
   },
   hero: {
