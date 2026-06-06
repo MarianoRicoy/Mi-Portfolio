@@ -10,6 +10,13 @@ const navItems = [
   { href: "#contacto", label: "Contacto" },
 ];
 
+function scrollToCenter(id: string) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
 export function Navbar({ personName }: NavbarProps) {
   return (
     <header id="navbar" className="navbar navbar--sticky">
@@ -20,7 +27,14 @@ export function Navbar({ personName }: NavbarProps) {
         <ul className="navbar-links">
           {navItems.map((item) => (
             <li key={item.href}>
-              <a href={item.href} className="nav-bracket-link">
+              <a
+                href={item.href}
+                className="nav-bracket-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToCenter(item.href.replace("#", ""));
+                }}
+              >
                 [ {item.label} ]
               </a>
             </li>
