@@ -21,9 +21,10 @@ function scrollToCenter(id: string) {
 }
 
 export function Navbar({ personName, proyectos }: NavbarProps) {
-  const [scrolled, setScrolled]       = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [scrolled, setScrolled]           = useState(false);
+  const [dropdownOpen, setDropdownOpen]   = useState(false);
   const [displayedName, setDisplayedName] = useState("");
+  const [navLinksVisible, setNavLinksVisible] = useState(false);
 
   // Scroll listener
   useEffect(() => {
@@ -55,6 +56,13 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
 
   const isTyping = displayedName.length < personName.length;
 
+  // Nav links aparecen cuando todo el hero terminó
+  useEffect(() => {
+    const handler = () => setTimeout(() => setNavLinksVisible(true), 200);
+    window.addEventListener("heroContentDone", handler);
+    return () => window.removeEventListener("heroContentDone", handler);
+  }, []);
+
   const handleOpenProject = (proyecto: ProyectoPortfolio) => {
     setDropdownOpen(false);
     scrollToCenter("proyectos");
@@ -73,7 +81,14 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
           {isTyping && <span className="navbar-brand-cursor" aria-hidden="true" />}
         </p>
 
-        <ul className="navbar-links">
+        <ul
+          className="navbar-links"
+          style={{
+            opacity: navLinksVisible ? 1 : 0,
+            pointerEvents: navLinksVisible ? "auto" : "none",
+            transition: "opacity 500ms ease",
+          }}
+        >
           {/* Inicio — aparece solo al scrollear */}
           <li
             style={{

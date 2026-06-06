@@ -37,5 +37,5 @@ export function useMouseRotation(intensity: number = 15) {
     y.set(0.5);
   }, [x, y]);
 
-  return { rotateX, rotateY, handleMouseMove, handleMouseLeave };
+  return { rotateX, rotateY, handleMouseMove, handleMouseLeave, x, y };
 }
