@@ -13,7 +13,7 @@ export const portfolioEs = {
     headline: "FULLSTACK DEVELOPER",
     sideLabels: ["DISEÑO WEB (UX/UI)", "DESARROLLO WEB"],
     summary:
-      "Transformo ideas en experiencias digitales robustas, escalables y enfocadas en resultados de negocio.",
+      "Desarrollo web especializado. Menos sobreingeniería, más rendimiento, código mantenible y diseño funcional.",
   },
   about: {
     title: "Sobre mí",
