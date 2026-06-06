@@ -7,14 +7,23 @@ type SeccionPresentacionProps = {
   sobreMi: SobreMiPortfolio;
 };
 
+const TWS_TOKEN = "Tech With Soul";
+
 /* ── Renderiza el contenido de una línea (maneja "Tech With Soul") ── */
 function LineContent({ text }: { text: string }) {
-  if (!text.includes("Tech With Soul")) return <>{text}</>;
-  const [before, after] = text.split("Tech With Soul");
+  if (!text.includes(TWS_TOKEN)) return <>{text}</>;
+  const [before, after] = text.split(TWS_TOKEN);
   return (
     <>
       {before}
-      <strong className="presentacion-emphasis">Tech With Soul</strong>
+      <a
+        href="https://www.tws.ar/"
+        target="_blank"
+        rel="noreferrer"
+        className="presentacion-tws-link"
+      >
+        <strong style={{ whiteSpace: "nowrap" }}>Tech With Soul</strong>
+      </a>
       {after}
     </>
   );
@@ -104,6 +113,14 @@ function SplitParagraph({
   // Fase de medición: el texto está visible pero lo tapamos con color igual al fondo
   // Así el layout se calcula con las dimensiones reales
   if (lines === null) {
+    // Tokenizamos manteniendo "Tech With Soul" como token único (no se parte)
+    const tokens: string[] = [];
+    const parts = text.split(TWS_TOKEN);
+    parts.forEach((part, i) => {
+      tokens.push(...part.split(/\s+/).filter(Boolean));
+      if (i < parts.length - 1) tokens.push(TWS_TOKEN);
+    });
+
     return (
       <p
         ref={measureRef}
@@ -111,8 +128,12 @@ function SplitParagraph({
         style={{ color: "transparent", userSelect: "none", pointerEvents: "none" }}
         aria-hidden="true"
       >
-        {text.split(/\s+/).map((word, i) => (
-          <span key={i} data-word={word}>
+        {tokens.map((word, i) => (
+          <span
+            key={i}
+            data-word={word}
+            style={word === TWS_TOKEN ? { whiteSpace: "nowrap" } : undefined}
+          >
             {word}{" "}
           </span>
         ))}

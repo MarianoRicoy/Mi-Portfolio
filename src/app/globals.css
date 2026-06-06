@@ -185,6 +185,19 @@ a {
   color: color-mix(in srgb, var(--foreground) 94%, transparent);
 }
 
+.presentacion-tws-link {
+  text-decoration: none;
+  color: inherit;
+  white-space: nowrap;
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 35%, transparent);
+  transition: border-color 180ms ease;
+}
+
+.presentacion-tws-link:hover {
+  border-bottom-color: var(--foreground);
+}
+
+
 @media (prefers-reduced-motion: reduce) {
   .pres-line {
     opacity: 1;
