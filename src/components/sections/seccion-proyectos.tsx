@@ -97,6 +97,17 @@ function ModalProyecto({
 export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
   const [abierto, setAbierto] = useState<ProyectoPortfolio | null>(null);
 
+  // Listener para el dropdown del navbar — abre el modal del proyecto indicado
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const nombre = (e as CustomEvent<string>).detail;
+      const proyecto = proyectos.find((p) => p.name === nombre);
+      if (proyecto) setAbierto(proyecto);
+    };
+    window.addEventListener("openProject", handler);
+    return () => window.removeEventListener("openProject", handler);
+  }, [proyectos]);
+
   return (
     <>
       <section id="proyectos" className="line-divider pt-10 md:pt-14">

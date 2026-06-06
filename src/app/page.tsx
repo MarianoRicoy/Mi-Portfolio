@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     <div className="pb-18">
-      <Navbar personName="Mariano F. Ricoy Portfolio" />
+      <Navbar personName="Mariano F. Ricoy Portfolio" proyectos={proyectos} />
 
       <main className="section-shell flex flex-col gap-22 md:gap-28 pt-20 md:pt-24">
         <SeccionHero hero={hero} />
