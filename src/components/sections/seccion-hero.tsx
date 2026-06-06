@@ -122,7 +122,7 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
       <div className="hero-poster-composition">
         {/* ── Columna izquierda: título + resumen ── */}
         <div
-          className="flex flex-col justify-center max-w-[50%] shrink-0"
+          className="flex flex-col justify-center w-full md:max-w-[50%] shrink-0"
           style={{ perspective: 1200 }}
         >
           <motion.h1
