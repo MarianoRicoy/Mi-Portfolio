@@ -75,7 +75,7 @@ export function TechStack() {
   return (
     <div ref={sectionRef} className="w-full mt-10 md:mt-12 relative">
       {/* Etiqueta respetando el design system */}
-      <p className="text-[0.74rem] tracking-[0.16em] uppercase font-bold text-black/60 mb-8">
+      <p className="kicker text-black/60 mb-8">
         [ Stack Tecnológico ]
       </p>
 

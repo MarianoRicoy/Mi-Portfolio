@@ -9,8 +9,8 @@ type NavbarProps = {
 };
 
 const navItems = [
-  { href: "#sobre-mi", label: "Sobre mí" },
-  { href: "#tecnologias", label: "Tecnologías" },
+  { href: "#sobre-mi", label: "Sobre mí", id: "sobre-mi" },
+  { href: "#tecnologias", label: "Tecnologías", id: "tecnologias" },
 ];
 
 function scrollToCenter(id: string) {
@@ -21,25 +21,33 @@ function scrollToCenter(id: string) {
 }
 
 export function Navbar({ personName, proyectos }: NavbarProps) {
-  const [scrolled, setScrolled]           = useState(false);
-  const [dropdownOpen, setDropdownOpen]   = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileProyectosOpen, setMobileProyectosOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [displayedName, setDisplayedName] = useState("");
   const [navLinksVisible, setNavLinksVisible] = useState(false);
 
-  // Scroll listener
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setMobileProyectosOpen(false);
+    setDropdownOpen(false);
+  };
+
+  const isMobileViewport = () =>
+    typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Siempre arriba al cargar/recargar
   useEffect(() => {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
   }, []);
 
-  // Typewriter del nombre → al terminar avisa al resto de la página
   useEffect(() => {
     let index = 0;
     const timer = setInterval(() => {
@@ -56,21 +64,42 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
 
   const isTyping = displayedName.length < personName.length;
 
-  // Nav links aparecen cuando todo el hero terminó
   useEffect(() => {
     const handler = () => setTimeout(() => setNavLinksVisible(true), 200);
     window.addEventListener("heroContentDone", handler);
     return () => window.removeEventListener("heroContentDone", handler);
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const overflowAnterior = document.body.style.overflow;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeMenu();
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [menuOpen]);
+
   const handleOpenProject = (proyecto: ProyectoPortfolio) => {
-    setDropdownOpen(false);
+    closeMenu();
     scrollToCenter("proyectos");
     setTimeout(() => {
       window.dispatchEvent(
-        new CustomEvent("openProject", { detail: proyecto.name })
+        new CustomEvent("openProject", { detail: proyecto.name }),
       );
     }, 380);
+  };
+
+  const handleNavTo = (id: string) => {
+    closeMenu();
+    scrollToCenter(id);
   };
 
   return (
@@ -81,101 +110,128 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
           {isTyping && <span className="navbar-brand-cursor" aria-hidden="true" />}
         </p>
 
-        <ul
-          className="navbar-links"
-          style={{
-            opacity: navLinksVisible ? 1 : 0,
-            pointerEvents: navLinksVisible ? "auto" : "none",
-            transition: "opacity 500ms ease",
-          }}
+        <button
+          type="button"
+          className={`navbar-menu-toggle${menuOpen ? " navbar-menu-toggle--open" : ""}`}
+          aria-expanded={menuOpen}
+          aria-controls="navbar-menu"
+          aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+          onClick={() => setMenuOpen((open) => !open)}
         >
-          {/* Inicio — aparece solo al scrollear */}
-          <li
+          <span className="navbar-menu-toggle-bar" />
+          <span className="navbar-menu-toggle-bar" />
+          <span className="navbar-menu-toggle-bar" />
+        </button>
+
+        <div
+          id="navbar-menu"
+          className={`navbar-menu${menuOpen ? " navbar-menu--open" : ""}`}
+        >
+          <ul
+            className="navbar-links"
             style={{
-              opacity: scrolled ? 1 : 0,
-              pointerEvents: scrolled ? "auto" : "none",
-              maxWidth: scrolled ? "120px" : "0px",
-              overflow: "hidden",
-              transition: "opacity 300ms ease, max-width 300ms ease",
+              opacity: navLinksVisible ? 1 : 0,
+              pointerEvents: navLinksVisible ? "auto" : "none",
+              transition: "opacity 500ms ease",
             }}
           >
-            <a
-              href="#"
-              className="nav-bracket-link"
-              aria-label="Volver al inicio"
-              onClick={(e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: "smooth" });
+            <li
+              className="navbar-link-inicio"
+              style={{
+                opacity: scrolled ? 1 : 0,
+                pointerEvents: scrolled ? "auto" : "none",
+                maxWidth: scrolled ? "120px" : "0px",
+                overflow: "hidden",
+                transition: "opacity 300ms ease, max-width 300ms ease",
               }}
             >
-              [ Inicio ]
-            </a>
-          </li>
-
-          {/* Items normales */}
-          {navItems.map((item) => (
-            <li key={item.href}>
               <a
-                href={item.href}
+                href="#"
+                className="nav-bracket-link"
+                aria-label="Volver al inicio"
+                onClick={(e) => {
+                  e.preventDefault();
+                  closeMenu();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              >
+                [ Inicio ]
+              </a>
+            </li>
+
+            {navItems.map((item) => (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  className="nav-bracket-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavTo(item.id);
+                  }}
+                >
+                  [ {item.label} ]
+                </a>
+              </li>
+            ))}
+
+            <li
+              className="nav-proyectos-wrapper"
+              onMouseEnter={() => {
+                if (!isMobileViewport()) setDropdownOpen(true);
+              }}
+              onMouseLeave={() => {
+                if (!isMobileViewport()) setDropdownOpen(false);
+              }}
+            >
+              <a
+                href="#proyectos"
                 className="nav-bracket-link"
                 onClick={(e) => {
                   e.preventDefault();
-                  scrollToCenter(item.href.replace("#", ""));
+                  if (isMobileViewport()) {
+                    setMobileProyectosOpen((open) => !open);
+                    return;
+                  }
+                  handleNavTo("proyectos");
                 }}
               >
-                [ {item.label} ]
+                [ Proyectos {(dropdownOpen || mobileProyectosOpen) ? "▴" : "▾"} ]
+              </a>
+
+              <ul
+                className={`nav-dropdown${
+                  dropdownOpen || mobileProyectosOpen ? " nav-dropdown--visible" : ""
+                }`}
+                role="menu"
+              >
+                {proyectos.map((p) => (
+                  <li key={p.name} role="menuitem">
+                    <button
+                      type="button"
+                      className="nav-dropdown-item"
+                      onClick={() => handleOpenProject(p)}
+                    >
+                      [ {p.name} ]
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </li>
+
+            <li>
+              <a
+                href="#contacto"
+                className="nav-bracket-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavTo("contacto");
+                }}
+              >
+                [ Contacto ]
               </a>
             </li>
-          ))}
-
-          {/* Proyectos con dropdown */}
-          <li
-            className="nav-proyectos-wrapper"
-            onMouseEnter={() => setDropdownOpen(true)}
-            onMouseLeave={() => setDropdownOpen(false)}
-          >
-            <a
-              href="#proyectos"
-              className="nav-bracket-link"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToCenter("proyectos");
-              }}
-            >
-              [ Proyectos {dropdownOpen ? "▴" : "▾"} ]
-            </a>
-
-            <ul
-              className={`nav-dropdown${dropdownOpen ? " nav-dropdown--visible" : ""}`}
-              role="menu"
-            >
-              {proyectos.map((p) => (
-                <li key={p.name} role="menuitem">
-                  <button
-                    className="nav-dropdown-item"
-                    onClick={() => handleOpenProject(p)}
-                  >
-                    [ {p.name} ]
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </li>
-
-          {/* Contacto */}
-          <li>
-            <a
-              href="#contacto"
-              className="nav-bracket-link"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToCenter("contacto");
-              }}
-            >
-              [ Contacto ]
-            </a>
-          </li>
-        </ul>
+          </ul>
+        </div>
       </nav>
     </header>
   );
