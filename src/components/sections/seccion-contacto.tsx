@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { AnimatedModal } from "@/components/animated-modal";
 import type { ContactoPortfolio, PersonaPortfolio } from "@/types/portfolio";
 
 type SeccionContactoProps = {
@@ -184,19 +185,14 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
         </div>
       </section>
 
-      {modalAbierto && (
-        <div
-          className="contacto-modal-overlay"
-          role="presentation"
-          onClick={cerrarModalSiPuede}
-        >
-          <div
-            className="contacto-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="contacto-modal-titulo"
-            onClick={(evento) => evento.stopPropagation()}
-          >
+      <AnimatedModal
+        open={modalAbierto}
+        onClose={cerrarModalSiPuede}
+        overlayClassName="contacto-modal-overlay"
+        panelClassName="contacto-modal"
+        ariaLabelledby="contacto-modal-titulo"
+        closeOnOverlay={estadoEnvio !== "loading"}
+      >
             <button
               type="button"
               className="contacto-modal-cerrar"
@@ -319,9 +315,7 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
                 </p>
               </form>
             )}
-          </div>
-        </div>
-      )}
+      </AnimatedModal>
     </>
   );
 }

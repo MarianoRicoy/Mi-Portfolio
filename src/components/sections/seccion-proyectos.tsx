@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { AnimatedModal } from "@/components/animated-modal";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import type { ProyectoPortfolio } from "@/types/portfolio";
 
 type SeccionProyectosProps = {
@@ -32,12 +34,18 @@ function MarqueeImages({ images, trackKey }: { images: readonly string[]; trackK
 
 function ModalProyecto({
   proyecto,
+  open,
   onClose,
+  onExitComplete,
 }: {
   proyecto: ProyectoPortfolio;
+  open: boolean;
   onClose: () => void;
+  onExitComplete: () => void;
 }) {
   useEffect(() => {
+    if (!open) return;
+
     const overflowPrevio = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
@@ -50,63 +58,68 @@ function ModalProyecto({
       document.body.style.overflow = overflowPrevio;
       window.removeEventListener("keydown", manejarEscape);
     };
-  }, [onClose]);
+  }, [open, onClose]);
 
   return (
-    <div
-      className="proj-modal-overlay"
-      role="presentation"
-      onClick={onClose}
+    <AnimatedModal
+      open={open}
+      onClose={onClose}
+      onExitComplete={onExitComplete}
+      overlayClassName="proj-modal-overlay"
+      panelClassName="proj-modal-box"
+      ariaLabel={`Proyecto: ${proyecto.name}`}
     >
-      <div
-        className="proj-modal-box"
-        role="dialog"
-        aria-modal="true"
-        aria-label={`Proyecto: ${proyecto.name}`}
-        onClick={(e) => e.stopPropagation()}
+      <button
+        type="button"
+        className="proj-modal-close"
+        aria-label="Cerrar"
+        onClick={onClose}
       >
-        <button
-          type="button"
-          className="proj-modal-close"
-          aria-label="Cerrar"
-          onClick={onClose}
-        >
-          ×
-        </button>
+        ×
+      </button>
 
-        <div className="proj-modal-video-wrap">
-          <video
-            key={proyecto.video}
-            src={encodeURI(proyecto.video)}
-            controls
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="proj-modal-video"
-          />
+      <div className="proj-modal-video-wrap">
+        <video
+          key={proyecto.video}
+          src={encodeURI(proyecto.video)}
+          controls
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="proj-modal-video"
+        />
+      </div>
+
+      <p className="proj-modal-desc">{proyecto.description}</p>
+
+      <div className="proj-marquee-wrap">
+        <div className="proj-marquee-track">
+          <MarqueeImages images={proyecto.marqueeImages} trackKey="t1" />
         </div>
-
-        <p className="proj-modal-desc">{proyecto.description}</p>
-
-        <div className="proj-marquee-wrap">
-          <div className="proj-marquee-track">
-            <MarqueeImages images={proyecto.marqueeImages} trackKey="t1" />
-          </div>
-          <div className="proj-marquee-track" aria-hidden="true">
-            <MarqueeImages images={proyecto.marqueeImages} trackKey="t2" />
-          </div>
+        <div className="proj-marquee-track" aria-hidden="true">
+          <MarqueeImages images={proyecto.marqueeImages} trackKey="t2" />
         </div>
       </div>
-    </div>
+    </AnimatedModal>
   );
 }
 
 export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
   const [abierto, setAbierto] = useState<ProyectoPortfolio | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const abrirProyecto = useCallback((proyecto: ProyectoPortfolio) => {
     setAbierto(proyecto);
+    setModalVisible(true);
+  }, []);
+
+  const cerrarProyecto = useCallback(() => {
+    setModalVisible(false);
+  }, []);
+
+  const limpiarProyecto = useCallback(() => {
+    setAbierto(null);
   }, []);
 
   const manejarTeclaProyecto = (
@@ -132,48 +145,57 @@ export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
   return (
     <>
       <section id="proyectos" className="line-divider pt-10 md:pt-14">
-        <p className="kicker text-black/60">[ Proyectos ]</p>
+        <ScrollReveal>
+          <p className="kicker text-black/60">[ Proyectos ]</p>
+        </ScrollReveal>
 
         <div className="mt-7 grid gap-6 grid-cols-1 md:grid-cols-3">
-          {proyectos.map((proyecto) => (
-            <div key={proyecto.name} className="proj-flip-card">
-              <div className="proj-flip-inner">
-                <div
-                  className="proj-flip-front relative"
-                  onClick={() => {
-                    if (isTouchDevice()) abrirProyecto(proyecto);
-                  }}
-                >
-                  <Image
-                    src={proyecto.cover}
-                    alt={proyecto.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="proj-cover-img"
-                  />
-                </div>
-
-                <div
-                  className="proj-flip-back"
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Ver proyecto ${proyecto.name}`}
-                  onClick={() => abrirProyecto(proyecto)}
-                  onKeyDown={(evento) => manejarTeclaProyecto(evento, proyecto)}
-                >
+          {proyectos.map((proyecto, index) => (
+            <ScrollReveal key={proyecto.name} delay={index * 90}>
+              <div className="proj-flip-card">
+                <div className="proj-flip-inner">
                   <div
-                    className="proj-back-bg"
-                    style={{ backgroundImage: `url(${encodeURI(proyecto.cover)})` }}
-                  />
+                    className="proj-flip-front relative"
+                    onClick={() => {
+                      if (isTouchDevice()) abrirProyecto(proyecto);
+                    }}
+                  >
+                    <Image
+                      src={proyecto.cover}
+                      alt={proyecto.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="proj-cover-img"
+                    />
+                  </div>
+
+                  <div
+                    className="proj-flip-back"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Ver proyecto ${proyecto.name}`}
+                    onClick={() => abrirProyecto(proyecto)}
+                    onKeyDown={(evento) => manejarTeclaProyecto(evento, proyecto)}
+                  >
+                    <div
+                      className="proj-back-bg"
+                      style={{ backgroundImage: `url(${encodeURI(proyecto.cover)})` }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
 
       {abierto && (
-        <ModalProyecto proyecto={abierto} onClose={() => setAbierto(null)} />
+        <ModalProyecto
+          proyecto={abierto}
+          open={modalVisible}
+          onClose={cerrarProyecto}
+          onExitComplete={limpiarProyecto}
+        />
       )}
     </>
   );
