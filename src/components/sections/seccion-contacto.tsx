@@ -76,17 +76,49 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
     setEstadoEnvio("loading");
     setMensajeError("");
 
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+
+    if (!accessKey) {
+      setEstadoEnvio("error");
+      setMensajeError("El formulario todavía no está configurado.");
+      return;
+    }
+
+    const nombreCompleto = `${formulario.nombre} ${formulario.apellido}`.trim();
+    const asunto =
+      formulario.asunto.trim() ||
+      `Consulta desde portfolio${nombreCompleto ? ` - ${nombreCompleto}` : ""}`;
+
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formulario),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          subject: asunto,
+          name: nombreCompleto,
+          email: formulario.email.trim(),
+          message: `Nombre: ${nombreCompleto}\nEmail: ${formulario.email.trim()}\nAsunto: ${asunto}`,
+          botcheck: false,
+        }),
       });
 
-      const data = (await response.json()) as { error?: string };
+      const responseText = await response.text();
+      let data: { success?: boolean; message?: string } = {};
 
-      if (!response.ok) {
-        throw new Error(data.error ?? "No se pudo enviar el mensaje.");
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText) as { success?: boolean; message?: string };
+        } catch {
+          throw new Error("Respuesta inválida del servicio de email.");
+        }
+      }
+
+      if (response.status !== 200 || data.success === false) {
+        throw new Error(data.message ?? "No se pudo enviar el mensaje.");
       }
 
       setEstadoEnvio("success");
