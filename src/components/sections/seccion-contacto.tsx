@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 import type { ContactoPortfolio, PersonaPortfolio } from "@/types/portfolio";
 
 type SeccionContactoProps = {
@@ -15,6 +15,8 @@ type FormularioContacto = {
   asunto: string;
 };
 
+type EstadoEnvio = "idle" | "loading" | "success" | "error";
+
 const formularioInicial: FormularioContacto = {
   nombre: "",
   apellido: "",
@@ -25,13 +27,24 @@ const formularioInicial: FormularioContacto = {
 export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [formulario, setFormulario] = useState<FormularioContacto>(formularioInicial);
+  const [estadoEnvio, setEstadoEnvio] = useState<EstadoEnvio>("idle");
+  const [mensajeError, setMensajeError] = useState("");
+
+  const cerrarModal = useCallback(() => {
+    setModalAbierto(false);
+    setFormulario(formularioInicial);
+    setEstadoEnvio("idle");
+    setMensajeError("");
+  }, []);
 
   useEffect(() => {
     if (!modalAbierto) return;
 
     const overflowAnterior = document.body.style.overflow;
     const manejarEscape = (evento: KeyboardEvent) => {
-      if (evento.key === "Escape") setModalAbierto(false);
+      if (evento.key === "Escape" && estadoEnvio !== "loading") {
+        cerrarModal();
+      }
     };
 
     document.body.style.overflow = "hidden";
@@ -41,25 +54,48 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
       document.body.style.overflow = overflowAnterior;
       window.removeEventListener("keydown", manejarEscape);
     };
-  }, [modalAbierto]);
+  }, [modalAbierto, estadoEnvio, cerrarModal]);
 
-  const cerrarModal = () => setModalAbierto(false);
+  useEffect(() => {
+    if (estadoEnvio !== "success") return;
 
-  const manejarEnvio = (evento: FormEvent<HTMLFormElement>) => {
-    evento.preventDefault();
+    const timeoutId = setTimeout(() => {
+      cerrarModal();
+    }, 2200);
 
-    const nombreCompleto = `${formulario.nombre} ${formulario.apellido}`.trim();
-    const asunto =
-      formulario.asunto.trim() ||
-      `Consulta desde portfolio${nombreCompleto ? ` - ${nombreCompleto}` : ""}`;
-    const cuerpo = [
-      `Nombre: ${formulario.nombre} ${formulario.apellido}`.trim(),
-      `Email: ${formulario.email}`,
-    ].join("\n");
+    return () => clearTimeout(timeoutId);
+  }, [estadoEnvio, cerrarModal]);
 
-    window.location.href = `mailto:${persona.email}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+  const cerrarModalSiPuede = () => {
+    if (estadoEnvio === "loading") return;
     cerrarModal();
-    setFormulario(formularioInicial);
+  };
+
+  const manejarEnvio = async (evento: FormEvent<HTMLFormElement>) => {
+    evento.preventDefault();
+    setEstadoEnvio("loading");
+    setMensajeError("");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formulario),
+      });
+
+      const data = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "No se pudo enviar el mensaje.");
+      }
+
+      setEstadoEnvio("success");
+    } catch (error) {
+      setEstadoEnvio("error");
+      setMensajeError(
+        error instanceof Error ? error.message : "No se pudo enviar el mensaje.",
+      );
+    }
   };
 
   return (
@@ -111,7 +147,7 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
         <div
           className="contacto-modal-overlay"
           role="presentation"
-          onClick={cerrarModal}
+          onClick={cerrarModalSiPuede}
         >
           <div
             className="contacto-modal"
@@ -124,88 +160,109 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
               type="button"
               className="contacto-modal-cerrar"
               aria-label="Cerrar modal"
-              onClick={cerrarModal}
+              onClick={cerrarModalSiPuede}
+              disabled={estadoEnvio === "loading"}
             >
               ×
             </button>
 
             <p className="contacto-modal-kicker kicker text-black/60">[ Contacto ]</p>
             <h3 id="contacto-modal-titulo" className="contacto-modal-titulo">
-              Completá el formulario
+              {estadoEnvio === "success" ? "¡Mensaje enviado!" : "Completá el formulario"}
             </h3>
 
-            <form className="contacto-formulario" onSubmit={manejarEnvio}>
-              <div className="contacto-formulario-fila">
-                <label className="contacto-campo">
-                  Nombre
-                  <input
-                    required
-                    value={formulario.nombre}
-                    onChange={(evento) =>
-                      setFormulario((anterior) => ({ ...anterior, nombre: evento.target.value }))
-                    }
-                    className="contacto-input"
-                    type="text"
-                    name="nombre"
-                    autoComplete="given-name"
-                  />
-                </label>
-
-                <label className="contacto-campo">
-                  Apellido
-                  <input
-                    required
-                    value={formulario.apellido}
-                    onChange={(evento) =>
-                      setFormulario((anterior) => ({ ...anterior, apellido: evento.target.value }))
-                    }
-                    className="contacto-input"
-                    type="text"
-                    name="apellido"
-                    autoComplete="family-name"
-                  />
-                </label>
-              </div>
-
-              <div className="contacto-formulario-fila">
-                <label className="contacto-campo">
-                  Email
-                  <input
-                    required
-                    value={formulario.email}
-                    onChange={(evento) =>
-                      setFormulario((anterior) => ({ ...anterior, email: evento.target.value }))
-                    }
-                    className="contacto-input"
-                    type="email"
-                    name="email"
-                    autoComplete="email"
-                  />
-                </label>
-
-                <label className="contacto-campo">
-                  Asunto
-                  <input
-                    required
-                    value={formulario.asunto}
-                    onChange={(evento) =>
-                      setFormulario((anterior) => ({ ...anterior, asunto: evento.target.value }))
-                    }
-                    className="contacto-input"
-                    type="text"
-                    name="asunto"
-                  />
-                </label>
-              </div>
-
-              <button type="submit" className="contacto-accion contacto-accion--submit">
-                Enviar
-              </button>
-
-              <p className="contacto-modal-nota">
-                Te responderemos en 1-2 días hábiles.
+            {estadoEnvio === "success" ? (
+              <p className="contacto-modal-nota contacto-modal-nota--success">
+                Gracias por escribirme. Te responderemos en 1-2 días hábiles.
               </p>
-            </form>
+            ) : (
+              <form className="contacto-formulario" onSubmit={manejarEnvio}>
+                <div className="contacto-formulario-fila">
+                  <label className="contacto-campo">
+                    Nombre
+                    <input
+                      required
+                      disabled={estadoEnvio === "loading"}
+                      value={formulario.nombre}
+                      onChange={(evento) =>
+                        setFormulario((anterior) => ({ ...anterior, nombre: evento.target.value }))
+                      }
+                      className="contacto-input"
+                      type="text"
+                      name="nombre"
+                      autoComplete="given-name"
+                    />
+                  </label>
+
+                  <label className="contacto-campo">
+                    Apellido
+                    <input
+                      required
+                      disabled={estadoEnvio === "loading"}
+                      value={formulario.apellido}
+                      onChange={(evento) =>
+                        setFormulario((anterior) => ({ ...anterior, apellido: evento.target.value }))
+                      }
+                      className="contacto-input"
+                      type="text"
+                      name="apellido"
+                      autoComplete="family-name"
+                    />
+                  </label>
+                </div>
+
+                <div className="contacto-formulario-fila">
+                  <label className="contacto-campo">
+                    Email
+                    <input
+                      required
+                      disabled={estadoEnvio === "loading"}
+                      value={formulario.email}
+                      onChange={(evento) =>
+                        setFormulario((anterior) => ({ ...anterior, email: evento.target.value }))
+                      }
+                      className="contacto-input"
+                      type="email"
+                      name="email"
+                      autoComplete="email"
+                    />
+                  </label>
+
+                  <label className="contacto-campo">
+                    Asunto
+                    <input
+                      required
+                      disabled={estadoEnvio === "loading"}
+                      value={formulario.asunto}
+                      onChange={(evento) =>
+                        setFormulario((anterior) => ({ ...anterior, asunto: evento.target.value }))
+                      }
+                      className="contacto-input"
+                      type="text"
+                      name="asunto"
+                    />
+                  </label>
+                </div>
+
+                {estadoEnvio === "error" && mensajeError && (
+                  <p className="contacto-modal-alerta" role="alert">
+                    {mensajeError}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  className="contacto-accion contacto-accion--submit"
+                  disabled={estadoEnvio === "loading"}
+                >
+                  {estadoEnvio === "loading" ? "Enviando..." : "Enviar"}
+                </button>
+
+                <p className="contacto-modal-nota">
+                  Te responderemos en 1-2 días hábiles.
+                </p>
+              </form>
+            )}
           </div>
         </div>
       )}
