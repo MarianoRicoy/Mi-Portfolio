@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { motion, useSpring, useTransform, useMotionValue } from "framer-motion";
 
 /** Tamaño del punto en px — se resta la mitad para centrarlo exactamente */
@@ -14,27 +14,49 @@ const SPRING_CONFIG = {
   mass: 0.5,
 };
 
-export function FollowerDot() {
-  const [mounted, setMounted] = useState(false);
-  const [hasHover, setHasHover] = useState(false);
+function subscribeHover(onStoreChange: () => void) {
+  const mq = window.matchMedia("(hover: hover)");
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
 
-  // Motion values crudas (sin spring) para la posición real del mouse
+function getHoverSnapshot() {
+  return window.matchMedia("(hover: hover)").matches;
+}
+
+function subscribeClient(onStoreChange: () => void) {
+  void onStoreChange;
+  return () => {};
+}
+
+function getClientSnapshot() {
+  return true;
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
+export function FollowerDot() {
+  const mounted = useSyncExternalStore(
+    subscribeClient,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
+  const hasHover = useSyncExternalStore(
+    subscribeHover,
+    getHoverSnapshot,
+    () => false,
+  );
+
   const rawX = useMotionValue(-100);
   const rawY = useMotionValue(-100);
 
-  // Valores con física de resorte aplicada
   const springX = useSpring(rawX, SPRING_CONFIG);
   const springY = useSpring(rawY, SPRING_CONFIG);
 
-  // Restamos la mitad del tamaño para centrar el punto en la punta del cursor
   const x = useTransform(springX, (v) => v - HALF);
   const y = useTransform(springY, (v) => v - HALF);
-
-  useEffect(() => {
-    setMounted(true);
-    // Solo en dispositivos que soportan hover real (no táctiles)
-    setHasHover(window.matchMedia("(hover: hover)").matches);
-  }, []);
 
   useEffect(() => {
     if (!hasHover) return;
@@ -48,7 +70,6 @@ export function FollowerDot() {
     return () => window.removeEventListener("mousemove", handleMove);
   }, [hasHover, rawX, rawY]);
 
-  // No renderizar en SSR ni en táctil
   if (!mounted || !hasHover) return null;
 
   return (

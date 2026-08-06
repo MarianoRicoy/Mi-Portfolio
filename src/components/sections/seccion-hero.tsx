@@ -11,41 +11,51 @@ type SeccionHeroProps = {
 };
 
 export function SeccionHero({ hero }: SeccionHeroProps) {
-  const hasTypedRef      = useRef(false);
-  const dispatchedRef    = useRef(false);
+  const hasTypedRef = useRef(false);
+  const dispatchedRef = useRef(false);
+  const timersRef = useRef<ReturnType<typeof setInterval>[]>([]);
 
-  const [titleVisible,   setTitleVisible]   = useState(false);
-  const [mouseEnabled,   setMouseEnabled]   = useState(false);
+  const [titleVisible, setTitleVisible] = useState(false);
+  const [mouseEnabled, setMouseEnabled] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
-  const [titleOpacity,   setTitleOpacity]   = useState(0);
+  const [titleOpacity, setTitleOpacity] = useState(0);
 
   const [displayedSummary, setDisplayedSummary] = useState("");
-  const [displayedLabel1,  setDisplayedLabel1]  = useState("");
-  const [displayedLabel2,  setDisplayedLabel2]  = useState("");
+  const [displayedLabel1, setDisplayedLabel1] = useState("");
+  const [displayedLabel2, setDisplayedLabel2] = useState("");
 
   const { rotateX, rotateY, handleMouseMove, handleMouseLeave, x, y } =
     useMouseRotation(18);
 
   const fullSummary = hero.summary;
-  const label1Text  = hero.sideLabels[0] ? `/${hero.sideLabels[0]}` : "";
-  const label2Text  = hero.sideLabels[1] ? `/${hero.sideLabels[1]}` : "";
+  const label1Text = hero.sideLabels[0] ? `/${hero.sideLabels[0]}` : "";
+  const label2Text = hero.sideLabels[1] ? `/${hero.sideLabels[1]}` : "";
 
-  // ── 1. Espera que el navbar termine de escribir ───────────────────────────
+  const clearAllTimers = () => {
+    timersRef.current.forEach(clearInterval);
+    timersRef.current = [];
+  };
+
   useEffect(() => {
-    const handler = () => setTimeout(() => setTitleVisible(true), 120);
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const handler = () => {
+      timeoutId = setTimeout(() => setTitleVisible(true), 120);
+    };
     window.addEventListener("navbarTypingDone", handler);
-    return () => window.removeEventListener("navbarTypingDone", handler);
+    return () => {
+      window.removeEventListener("navbarTypingDone", handler);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
-  // ── 2. Entrance del título: fade-in + tilt 3D usando las motion values ────
   useEffect(() => {
     if (!titleVisible) return;
 
-    // Fade-in del título
     setTitleOpacity(1);
 
-    // Secuencia de tilt usando las mismas motion values que el mouse:
-    // izquierda → derecha → centro
+    let contentTimeoutId: ReturnType<typeof setTimeout>;
+    let cancelled = false;
+
     const sequence = async () => {
       await animate(x, 0.1, { duration: 0.5, ease: [0.22, 1, 0.36, 1] });
       await animate(x, 0.9, { duration: 0.55, ease: [0.22, 1, 0.36, 1] });
@@ -58,13 +68,17 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
     };
 
     Promise.all([sequence(), sequenceY()]).then(() => {
-      // El tilt terminó → habilitar mouse y revelar contenido
+      if (cancelled) return;
       setMouseEnabled(true);
-      setTimeout(() => setContentVisible(true), 180);
+      contentTimeoutId = setTimeout(() => setContentVisible(true), 180);
     });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(contentTimeoutId);
+    };
   }, [titleVisible, x, y]);
 
-  // ── 3. Typewriters arrancan cuando el contenido es visible ────────────────
   useEffect(() => {
     if (!contentVisible || hasTypedRef.current) return;
     hasTypedRef.current = true;
@@ -83,6 +97,7 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
             l1++;
           } else {
             clearInterval(label1Timer);
+            if (label2Text.length === 0) return;
             let l2 = 0;
             const label2Timer = setInterval(() => {
               if (l2 < label2Text.length) {
@@ -92,21 +107,46 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
                 clearInterval(label2Timer);
               }
             }, 30);
+            timersRef.current.push(label2Timer);
           }
         }, 30);
+        timersRef.current.push(label1Timer);
       }
     }, 18);
+    timersRef.current.push(summaryTimer);
 
-    return () => clearInterval(summaryTimer);
+    return () => {
+      clearAllTimers();
+      hasTypedRef.current = false;
+    };
   }, [contentVisible, fullSummary, label1Text, label2Text]);
 
-  // ── 4. Al terminar el último typewriter → avisa al navbar ─────────────────
   useEffect(() => {
     if (!contentVisible || dispatchedRef.current) return;
-    if (label2Text.length === 0 || displayedLabel2.length !== label2Text.length) return;
+
+    const summaryDone = displayedSummary.length === fullSummary.length;
+    const label1Done =
+      label1Text.length === 0 || displayedLabel1.length === label1Text.length;
+    const label2Done =
+      label2Text.length === 0 || displayedLabel2.length === label2Text.length;
+
+    if (!summaryDone || !label1Done || !label2Done) return;
+
     dispatchedRef.current = true;
-    setTimeout(() => window.dispatchEvent(new CustomEvent("heroContentDone")), 280);
-  }, [displayedLabel2, label2Text, contentVisible]);
+    const timeoutId = setTimeout(
+      () => window.dispatchEvent(new CustomEvent("heroContentDone")),
+      280,
+    );
+    return () => clearTimeout(timeoutId);
+  }, [
+    contentVisible,
+    displayedSummary,
+    fullSummary,
+    displayedLabel1,
+    label1Text,
+    displayedLabel2,
+    label2Text,
+  ]);
 
   const showSummaryCursor =
     contentVisible && displayedSummary.length < fullSummary.length;
@@ -115,12 +155,12 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
     displayedLabel1.length < label1Text.length;
   const showLabel2Cursor =
     displayedLabel1.length === label1Text.length &&
+    label2Text.length > 0 &&
     displayedLabel2.length < label2Text.length;
 
   return (
     <section id="hero" className="hero-poster-section pt-14 md:pt-20">
       <div className="hero-poster-composition">
-        {/* ── Columna izquierda: título + resumen ── */}
         <div
           className="hero-copy-column flex flex-col justify-center w-full md:max-w-[50%] shrink-0"
           style={{ perspective: 1200 }}
@@ -137,9 +177,9 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
             onMouseMove={mouseEnabled ? handleMouseMove : undefined}
             onMouseLeave={mouseEnabled ? handleMouseLeave : undefined}
           >
-            {hero.headline.split(/\s+/).map((word) => (
+            {hero.headline.split(/\s+/).map((word, index) => (
               <span
-                key={word}
+                key={`${word}-${index}`}
                 className="hero-poster-title-line inline-block origin-center"
                 style={{ transform: "translateZ(20px)" }}
               >
@@ -165,7 +205,6 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
           </p>
         </div>
 
-        {/* ── Columna derecha: foto + etiquetas ── */}
         <div
           className="flex-1 flex items-center justify-center"
           style={{

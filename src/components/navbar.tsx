@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ProyectoPortfolio } from "@/types/portfolio";
 
 type NavbarProps = {
@@ -27,6 +27,7 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [displayedName, setDisplayedName] = useState("");
   const [navLinksVisible, setNavLinksVisible] = useState(false);
+  const openProjectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const closeMenu = () => {
     setMenuOpen(false);
@@ -65,9 +66,23 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
   const isTyping = displayedName.length < personName.length;
 
   useEffect(() => {
-    const handler = () => setTimeout(() => setNavLinksVisible(true), 200);
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const handler = () => {
+      timeoutId = setTimeout(() => setNavLinksVisible(true), 200);
+    };
     window.addEventListener("heroContentDone", handler);
-    return () => window.removeEventListener("heroContentDone", handler);
+    return () => {
+      window.removeEventListener("heroContentDone", handler);
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (openProjectTimeoutRef.current) {
+        clearTimeout(openProjectTimeoutRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -90,10 +105,14 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
   const handleOpenProject = (proyecto: ProyectoPortfolio) => {
     closeMenu();
     scrollToCenter("proyectos");
-    setTimeout(() => {
+    if (openProjectTimeoutRef.current) {
+      clearTimeout(openProjectTimeoutRef.current);
+    }
+    openProjectTimeoutRef.current = setTimeout(() => {
       window.dispatchEvent(
         new CustomEvent("openProject", { detail: proyecto.name }),
       );
+      openProjectTimeoutRef.current = null;
     }, 380);
   };
 

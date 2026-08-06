@@ -1,11 +1,34 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { useState, useEffect, useCallback, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { ProyectoPortfolio } from "@/types/portfolio";
 
 type SeccionProyectosProps = {
   proyectos: readonly ProyectoPortfolio[];
 };
+
+function isTouchDevice() {
+  return typeof window !== "undefined" && window.matchMedia("(hover: none)").matches;
+}
+
+function MarqueeImages({ images, trackKey }: { images: readonly string[]; trackKey: string }) {
+  return (
+    <>
+      {images.map((src, i) => (
+        <div key={`${trackKey}-${src}-${i}`} className="proj-marquee-item relative">
+          <Image
+            src={src}
+            alt=""
+            fill
+            sizes="380px"
+            className="proj-marquee-img object-cover"
+          />
+        </div>
+      ))}
+    </>
+  );
+}
 
 function ModalProyecto({
   proyecto,
@@ -14,13 +37,11 @@ function ModalProyecto({
   proyecto: ProyectoPortfolio;
   onClose: () => void;
 }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
   useEffect(() => {
     const overflowPrevio = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    const manejarEscape = (e: KeyboardEvent) => {
+    const manejarEscape = (e: globalThis.KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", manejarEscape);
@@ -44,7 +65,6 @@ function ModalProyecto({
         aria-label={`Proyecto: ${proyecto.name}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Botón cerrar */}
         <button
           type="button"
           className="proj-modal-close"
@@ -54,12 +74,10 @@ function ModalProyecto({
           ×
         </button>
 
-        {/* Video */}
         <div className="proj-modal-video-wrap">
           <video
-            ref={videoRef}
             key={proyecto.video}
-            src={proyecto.video}
+            src={encodeURI(proyecto.video)}
             controls
             autoPlay
             loop
@@ -69,24 +87,14 @@ function ModalProyecto({
           />
         </div>
 
-        {/* Descripción */}
         <p className="proj-modal-desc">{proyecto.description}</p>
 
-        {/* Marquee — dos tracks duplicados para loop continuo sin saltos */}
         <div className="proj-marquee-wrap">
           <div className="proj-marquee-track">
-            {proyecto.marqueeImages.map((src, i) => (
-              <div key={i} className="proj-marquee-item">
-                <img src={src} alt="" className="proj-marquee-img" />
-              </div>
-            ))}
+            <MarqueeImages images={proyecto.marqueeImages} trackKey="t1" />
           </div>
           <div className="proj-marquee-track" aria-hidden="true">
-            {proyecto.marqueeImages.map((src, i) => (
-              <div key={i} className="proj-marquee-item">
-                <img src={src} alt="" className="proj-marquee-img" />
-              </div>
-            ))}
+            <MarqueeImages images={proyecto.marqueeImages} trackKey="t2" />
           </div>
         </div>
       </div>
@@ -97,7 +105,20 @@ function ModalProyecto({
 export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
   const [abierto, setAbierto] = useState<ProyectoPortfolio | null>(null);
 
-  // Listener para el dropdown del navbar — abre el modal del proyecto indicado
+  const abrirProyecto = useCallback((proyecto: ProyectoPortfolio) => {
+    setAbierto(proyecto);
+  }, []);
+
+  const manejarTeclaProyecto = (
+    evento: ReactKeyboardEvent<HTMLDivElement>,
+    proyecto: ProyectoPortfolio,
+  ) => {
+    if (evento.key === "Enter" || evento.key === " ") {
+      evento.preventDefault();
+      abrirProyecto(proyecto);
+    }
+  };
+
   useEffect(() => {
     const handler = (e: Event) => {
       const nombre = (e as CustomEvent<string>).detail;
@@ -117,23 +138,32 @@ export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
           {proyectos.map((proyecto) => (
             <div key={proyecto.name} className="proj-flip-card">
               <div className="proj-flip-inner">
-                {/* Frente */}
-                <div className="proj-flip-front">
-                  <img
+                <div
+                  className="proj-flip-front relative"
+                  onClick={() => {
+                    if (isTouchDevice()) abrirProyecto(proyecto);
+                  }}
+                >
+                  <Image
                     src={proyecto.cover}
                     alt={proyecto.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     className="proj-cover-img"
                   />
                 </div>
 
-                {/* Dorso */}
                 <div
                   className="proj-flip-back"
-                  onClick={() => setAbierto(proyecto)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Ver proyecto ${proyecto.name}`}
+                  onClick={() => abrirProyecto(proyecto)}
+                  onKeyDown={(evento) => manejarTeclaProyecto(evento, proyecto)}
                 >
                   <div
                     className="proj-back-bg"
-                    style={{ backgroundImage: `url(${proyecto.cover})` }}
+                    style={{ backgroundImage: `url(${encodeURI(proyecto.cover)})` }}
                   />
                 </div>
               </div>
