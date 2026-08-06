@@ -709,6 +709,138 @@ h1.hero-poster-title {
   border-color: color-mix(in srgb, var(--foreground) 90%, transparent);
 }
 
+button.contacto-accion {
+  font: inherit;
+}
+
+.contacto-accion--submit {
+  width: 100%;
+  margin-top: 0.35rem;
+  border-color: color-mix(in srgb, var(--foreground) 84%, transparent);
+  background: color-mix(in srgb, var(--foreground) 84%, transparent);
+  color: #f3f3f1;
+}
+
+.contacto-accion--submit:hover {
+  background: color-mix(in srgb, var(--foreground) 92%, transparent);
+  border-color: color-mix(in srgb, var(--foreground) 92%, transparent);
+  color: #f3f3f1;
+}
+
+.contacto-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  background: rgba(233, 233, 228, 0.82);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.contacto-modal {
+  position: relative;
+  width: min(640px, 100%);
+  border-radius: 1.125rem;
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--surface) 92%, white),
+      color-mix(in srgb, var(--background) 94%, #dbd8cf)
+    );
+  color: var(--foreground);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);
+}
+
+.contacto-modal-kicker {
+  margin: 0 0 0.55rem;
+}
+
+.contacto-modal-titulo {
+  margin: 0 0 1.35rem;
+  font-size: clamp(1.45rem, 3vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: color-mix(in srgb, var(--foreground) 92%, transparent);
+}
+
+.contacto-modal-cerrar {
+  position: absolute;
+  top: 0.875rem;
+  right: 0.875rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--line) 18%, transparent);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.contacto-modal-cerrar:hover {
+  background: color-mix(in srgb, var(--foreground) 10%, transparent);
+  color: var(--foreground);
+}
+
+.contacto-formulario {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.contacto-formulario-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.contacto-campo {
+  display: grid;
+  gap: 0.38rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+}
+
+.contacto-input {
+  width: 100%;
+  border-radius: 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--line) 18%, transparent);
+  background: color-mix(in srgb, #ffffff 52%, var(--surface));
+  padding: 0.65rem 0.8rem;
+  color: color-mix(in srgb, var(--foreground) 94%, transparent);
+  font-size: 0.94rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.contacto-input:focus {
+  border-color: color-mix(in srgb, var(--foreground) 45%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--line) 10%, transparent);
+}
+
+.contacto-modal-nota {
+  margin: 0.15rem 0 0;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--foreground) 58%, transparent);
+}
+
 @media (max-width: 767px) {
   .navbar-inner {
     flex-wrap: nowrap;
@@ -926,5 +1058,9 @@ h1.hero-poster-title {
 
   .contacto-accion {
     font-size: 0.9rem;
+  }
+
+  .contacto-formulario-fila {
+    grid-template-columns: 1fr;
   }
 }
