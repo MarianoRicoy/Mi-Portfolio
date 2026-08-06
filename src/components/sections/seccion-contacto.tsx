@@ -13,6 +13,7 @@ type FormularioContacto = {
   apellido: string;
   email: string;
   asunto: string;
+  detalle: string;
 };
 
 type EstadoEnvio = "idle" | "loading" | "success" | "error";
@@ -22,6 +23,7 @@ const formularioInicial: FormularioContacto = {
   apellido: "",
   email: "",
   asunto: "",
+  detalle: "",
 };
 
 export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
@@ -101,7 +103,14 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
           subject: asunto,
           name: nombreCompleto,
           email: formulario.email.trim(),
-          message: `Nombre: ${nombreCompleto}\nEmail: ${formulario.email.trim()}\nAsunto: ${asunto}`,
+          message: [
+            `Nombre: ${nombreCompleto}`,
+            `Email: ${formulario.email.trim()}`,
+            `Asunto: ${asunto}`,
+            "",
+            "Detalle:",
+            formulario.detalle.trim(),
+          ].join("\n"),
           botcheck: false,
         }),
       });
@@ -275,6 +284,21 @@ export function SeccionContacto({ contacto, persona }: SeccionContactoProps) {
                     />
                   </label>
                 </div>
+
+                <label className="contacto-campo contacto-campo--full">
+                  Detalle
+                  <textarea
+                    required
+                    disabled={estadoEnvio === "loading"}
+                    value={formulario.detalle}
+                    onChange={(evento) =>
+                      setFormulario((anterior) => ({ ...anterior, detalle: evento.target.value }))
+                    }
+                    className="contacto-input contacto-textarea"
+                    name="detalle"
+                    rows={5}
+                  />
+                </label>
 
                 {estadoEnvio === "error" && mensajeError && (
                   <p className="contacto-modal-alerta" role="alert">

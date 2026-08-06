@@ -833,6 +833,16 @@ button.contacto-accion {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--line) 10%, transparent);
 }
 
+.contacto-campo--full {
+  grid-column: 1 / -1;
+}
+
+.contacto-textarea {
+  min-height: 130px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
 .contacto-modal-nota {
   margin: 0.15rem 0 0;
   text-align: center;
