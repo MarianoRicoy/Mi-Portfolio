@@ -513,6 +513,16 @@ h1.hero-poster-title {
   justify-content: center;
 }
 
+.proj-flip-back:focus {
+  outline: none;
+}
+
+.proj-flip-card:has(.proj-flip-back:focus-visible) {
+  border-radius: 0.875rem;
+  outline: 2px solid #111218;
+  outline-offset: 3px;
+}
+
 .proj-back-bg {
   position: absolute;
   inset: 0;

@@ -30,16 +30,27 @@ function scrollToCenter(id: string) {
 export function Navbar({ personName, proyectos }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownFocus, setDropdownFocus] = useState(false);
   const [mobileProyectosOpen, setMobileProyectosOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [displayedName, setDisplayedName] = useState("");
   const [navLinksVisible, setNavLinksVisible] = useState(false);
   const openProjectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const proyectosTriggerRef = useRef<HTMLAnchorElement>(null);
+  const ignoreProyectosFocusRef = useRef(false);
+  const proyectosVisibles = dropdownOpen || dropdownFocus || mobileProyectosOpen;
 
   const closeMenu = () => {
     setMenuOpen(false);
     setMobileProyectosOpen(false);
     setDropdownOpen(false);
+    setDropdownFocus(false);
+  };
+
+  const cerrarProyectos = () => {
+    setDropdownOpen(false);
+    setDropdownFocus(false);
+    setMobileProyectosOpen(false);
   };
 
   const isMobileViewport = () =>
@@ -240,34 +251,68 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
               onMouseLeave={() => {
                 if (!isMobileViewport()) setDropdownOpen(false);
               }}
+              onFocus={(event) => {
+                if (ignoreProyectosFocusRef.current) {
+                  ignoreProyectosFocusRef.current = false;
+                  return;
+                }
+                const target = event.target;
+                if (!(target instanceof Element) || !target.matches(":focus-visible")) return;
+                setDropdownFocus(true);
+              }}
+              onBlur={(event) => {
+                const next = event.relatedTarget;
+                if (next instanceof Node && event.currentTarget.contains(next)) return;
+                setDropdownFocus(false);
+              }}
+              onKeyDown={(event) => {
+                if (event.key !== "Escape" || !proyectosVisibles) return;
+                event.preventDefault();
+                event.stopPropagation();
+                cerrarProyectos();
+                if (document.activeElement !== proyectosTriggerRef.current) {
+                  ignoreProyectosFocusRef.current = true;
+                  proyectosTriggerRef.current?.focus();
+                }
+              }}
             >
               <a
+                ref={proyectosTriggerRef}
                 href="#proyectos"
                 className="nav-bracket-link"
+                aria-expanded={proyectosVisibles}
+                aria-controls="nav-proyectos-opciones"
                 onClick={(e) => {
                   e.preventDefault();
                   if (isMobileViewport()) {
-                    setMobileProyectosOpen((open) => !open);
+                    const next = !proyectosVisibles;
+                    setMobileProyectosOpen(next);
+                    setDropdownFocus(next);
                     return;
                   }
                   handleNavTo("proyectos");
                 }}
               >
-                [ Proyectos {(dropdownOpen || mobileProyectosOpen) ? "▴" : "▾"} ]
+                [ Proyectos {proyectosVisibles ? "▴" : "▾"} ]
               </a>
 
               <ul
-                className={`nav-dropdown${
-                  dropdownOpen || mobileProyectosOpen ? " nav-dropdown--visible" : ""
-                }`}
-                role="menu"
+                id="nav-proyectos-opciones"
+                className={`nav-dropdown${proyectosVisibles ? " nav-dropdown--visible" : ""}`}
+                aria-hidden={proyectosVisibles ? undefined : true}
               >
                 {proyectos.map((p) => (
-                  <li key={p.name} role="menuitem">
+                  <li key={p.name}>
                     <button
                       type="button"
                       className="nav-dropdown-item"
+                      tabIndex={proyectosVisibles ? 0 : -1}
                       onClick={() => handleOpenProject(p)}
+                      onKeyDown={(event) => {
+                        if (event.key !== "Enter" && event.key !== " ") return;
+                        event.preventDefault();
+                        handleOpenProject(p);
+                      }}
                     >
                       [ {p.name} ]
                     </button>
