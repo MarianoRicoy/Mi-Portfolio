@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ProyectoPortfolio } from "@/types/portfolio";
+import {
+  prefersReducedMotion,
+  useIsomorphicLayoutEffect,
+} from "@/hooks/use-prefers-reduced-motion";
 
 type NavbarProps = {
   personName: string;
@@ -16,7 +20,10 @@ const navItems = [
 function scrollToCenter(id: string) {
   const el = document.getElementById(id);
   if (el) {
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.scrollIntoView({
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
+      block: "center",
+    });
   }
 }
 
@@ -49,9 +56,38 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
     window.scrollTo(0, 0);
   }, []);
 
+  const showStaticNav = useCallback(() => {
+    setDisplayedName(personName);
+    setNavLinksVisible(true);
+  }, [personName]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (!prefersReducedMotion()) return;
+    showStaticNav();
+  }, [personName]);
+
   useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => {
+      if (media.matches) showStaticNav();
+    };
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, [showStaticNav]);
+
+  useEffect(() => {
+    if (prefersReducedMotion()) {
+      showStaticNav();
+      return;
+    }
+
     let index = 0;
     const timer = setInterval(() => {
+      if (prefersReducedMotion()) {
+        clearInterval(timer);
+        showStaticNav();
+        return;
+      }
       if (index < personName.length) {
         setDisplayedName(personName.slice(0, index + 1));
         index++;
@@ -61,7 +97,7 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
       }
     }, 38);
     return () => clearInterval(timer);
-  }, [personName]);
+  }, [personName, showStaticNav]);
 
   const isTyping = displayedName.length < personName.length;
 
@@ -113,7 +149,7 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
         new CustomEvent("openProject", { detail: proyecto.name }),
       );
       openProjectTimeoutRef.current = null;
-    }, 380);
+    }, prefersReducedMotion() ? 0 : 380);
   };
 
   const handleNavTo = (id: string) => {
@@ -171,7 +207,10 @@ export function Navbar({ personName, proyectos }: NavbarProps) {
                 onClick={(e) => {
                   e.preventDefault();
                   closeMenu();
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  window.scrollTo({
+                    top: 0,
+                    behavior: prefersReducedMotion() ? "auto" : "smooth",
+                  });
                 }}
               >
                 [ Inicio ]

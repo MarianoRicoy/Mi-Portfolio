@@ -37,7 +37,11 @@ export function AnimatedModal({
           initial={reduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={reduceMotion ? undefined : { opacity: 0 }}
-          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
+          }
           onClick={closeOnOverlay ? onClose : undefined}
         >
           <motion.div
@@ -49,7 +53,11 @@ export function AnimatedModal({
             initial={reduceMotion ? false : { opacity: 0, scale: 0.96, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98, y: 6 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }
+            }
             onClick={(evento) => evento.stopPropagation()}
           >
             {children}

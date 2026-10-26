@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import { prefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 type Technology = {
   name: string;
@@ -21,6 +22,7 @@ export function TechStack() {
   const [selectedTech, setSelectedTech] = useState<Technology | null>(null);
   const [elevatorUp, setElevatorUp] = useState(false);
   const [avatarMounted, setAvatarMounted] = useState(false);
+  const [avatarStill, setAvatarStill] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -37,14 +39,21 @@ export function TechStack() {
       ([entry]) => {
         clearAllTimers();
         if (entry.isIntersecting) {
-          // La sección es visible: montar y subir
+          const reduced = prefersReducedMotion();
+          setAvatarStill(reduced);
           setAvatarMounted(true);
-          timersRef.current.push(setTimeout(() => setElevatorUp(true), 120));
-          // Bajar automáticamente después de 5s (ELIMINADO: ahora se queda hasta hacer scroll)
+          if (reduced) {
+            setElevatorUp(true);
+          } else {
+            timersRef.current.push(setTimeout(() => setElevatorUp(true), 120));
+          }
         } else {
-          // La sección salió del viewport: bajar inmediatamente
           setElevatorUp(false);
-          timersRef.current.push(setTimeout(() => setAvatarMounted(false), 1000));
+          if (prefersReducedMotion()) {
+            setAvatarMounted(false);
+          } else {
+            timersRef.current.push(setTimeout(() => setAvatarMounted(false), 1000));
+          }
         }
       },
       { threshold: 0.3 }
@@ -101,7 +110,6 @@ export function TechStack() {
                     fill
                     sizes="(max-width: 768px) 48px, 56px"
                     className="object-contain"
-                    priority
                   />
                 </div>
 
@@ -153,9 +161,11 @@ export function TechStack() {
             left: "calc((100vw - min(1120px, 92vw)) / -4 - 110px)",
             top: "0px",
             zIndex: 40,
-            transition: "transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease",
-            transform: elevatorUp ? "translateY(0)" : "translateY(120px)",
-            opacity: elevatorUp ? 1 : 0,
+            transition: avatarStill
+              ? "none"
+              : "transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease",
+            transform: avatarStill || elevatorUp ? "translateY(0)" : "translateY(120px)",
+            opacity: avatarStill || elevatorUp ? 1 : 0,
           }}
         >
           {/* Globo de conversación */}

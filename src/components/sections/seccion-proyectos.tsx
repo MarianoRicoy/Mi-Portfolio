@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, type KeyboardEvent as ReactKeyboardEv
 import { AnimatedModal } from "@/components/animated-modal";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import type { ProyectoPortfolio } from "@/types/portfolio";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 type SeccionProyectosProps = {
   proyectos: readonly ProyectoPortfolio[];
@@ -106,6 +107,7 @@ function ModalProyecto({
 }
 
 export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
+  const reducedMotion = usePrefersReducedMotion();
   const [abierto, setAbierto] = useState<ProyectoPortfolio | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -136,11 +138,11 @@ export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
     const handler = (e: Event) => {
       const nombre = (e as CustomEvent<string>).detail;
       const proyecto = proyectos.find((p) => p.name === nombre);
-      if (proyecto) setAbierto(proyecto);
+      if (proyecto) abrirProyecto(proyecto);
     };
     window.addEventListener("openProject", handler);
     return () => window.removeEventListener("openProject", handler);
-  }, [proyectos]);
+  }, [proyectos, abrirProyecto]);
 
   return (
     <>
@@ -156,13 +158,21 @@ export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
                 <div className="proj-flip-inner">
                   <div
                     className="proj-flip-front relative"
+                    role={reducedMotion ? "button" : undefined}
+                    tabIndex={reducedMotion ? 0 : undefined}
+                    aria-label={reducedMotion ? `Ver proyecto ${proyecto.name}` : undefined}
                     onClick={() => {
-                      if (isTouchDevice()) abrirProyecto(proyecto);
+                      if (reducedMotion || isTouchDevice()) abrirProyecto(proyecto);
                     }}
+                    onKeyDown={
+                      reducedMotion
+                        ? (evento) => manejarTeclaProyecto(evento, proyecto)
+                        : undefined
+                    }
                   >
                     <Image
                       src={proyecto.cover}
-                      alt={proyecto.name}
+                      alt={reducedMotion ? "" : proyecto.name}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="proj-cover-img"
@@ -171,11 +181,16 @@ export function SeccionProyectos({ proyectos }: SeccionProyectosProps) {
 
                   <div
                     className="proj-flip-back"
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Ver proyecto ${proyecto.name}`}
-                    onClick={() => abrirProyecto(proyecto)}
-                    onKeyDown={(evento) => manejarTeclaProyecto(evento, proyecto)}
+                    role={reducedMotion ? undefined : "button"}
+                    tabIndex={reducedMotion ? -1 : 0}
+                    aria-hidden={reducedMotion ? true : undefined}
+                    aria-label={reducedMotion ? undefined : `Ver proyecto ${proyecto.name}`}
+                    onClick={reducedMotion ? undefined : () => abrirProyecto(proyecto)}
+                    onKeyDown={
+                      reducedMotion
+                        ? undefined
+                        : (evento) => manejarTeclaProyecto(evento, proyecto)
+                    }
                   >
                     <div
                       className="proj-back-bg"

@@ -220,9 +220,12 @@ a {
   text-align: left;
 }
 
-/* ── Cada línea visual: empieza invisible y sube al revelar ── */
+/* ── Línea visual. Visible por defecto; la intro solo corre con JS y movimiento permitido ── */
 .pres-line {
   display: block;
+}
+
+.presentacion-motion .pres-line {
   opacity: 0;
   transform: translateY(0.9rem);
   transition:
@@ -230,7 +233,7 @@ a {
     transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.pres-line--visible {
+.presentacion-motion .pres-line--visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -291,6 +294,7 @@ a {
 
 @media (prefers-reduced-motion: reduce) {
   .pres-line,
+  .presentacion-motion .pres-line,
   .scroll-reveal {
     opacity: 1;
     transform: none;
@@ -696,7 +700,7 @@ h1.hero-poster-title {
   flex: 0 0 auto;
   height: var(--avatar-h);
   width: calc(var(--avatar-h) * 301.5 / 959.66);
-  background-image: url("/1.svg");
+  background-image: url("/contacto-avatar.svg");
   background-repeat: no-repeat;
   background-size: calc(var(--avatar-h) * 864 / 959.66) calc(var(--avatar-h) * 2748 / 959.66);
   background-position: calc(var(--avatar-h) * -243.36 / 959.66) calc(var(--avatar-h) * -1658 / 959.66);
@@ -1109,5 +1113,50 @@ button.contacto-accion {
 
   .contacto-formulario-fila {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-poster-title,
+  .hero-summary,
+  .hero-reveal,
+  .navbar-links,
+  .navbar-link-inicio,
+  .navbar-menu,
+  .nav-dropdown,
+  .navbar-menu-toggle-bar {
+    transition: none !important;
+  }
+
+  .marquee-content,
+  .proj-marquee-track {
+    animation: none;
+  }
+
+  .proj-flip-inner,
+  .proj-back-bg,
+  .proj-cover-img {
+    transition: none;
+  }
+
+  .proj-flip-card:hover .proj-flip-inner,
+  .proj-flip-card:focus .proj-flip-inner,
+  .proj-flip-card:focus-within .proj-flip-inner,
+  .proj-flip-card:hover .proj-back-bg,
+  .proj-flip-card:focus-within .proj-back-bg {
+    transform: none;
+  }
+
+  .proj-flip-front {
+    cursor: pointer;
+  }
+
+  .proj-flip-front:focus-visible {
+    outline: 2px solid #111218;
+    outline-offset: 3px;
+  }
+
+  .proj-flip-back {
+    pointer-events: none;
   }
 }

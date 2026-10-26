@@ -2,6 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import { motion, useSpring, useTransform, useMotionValue } from "framer-motion";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 /** Tamaño del punto en px — se resta la mitad para centrarlo exactamente */
 const DOT_SIZE = 8;
@@ -48,6 +49,7 @@ export function FollowerDot() {
     getHoverSnapshot,
     () => false,
   );
+  const prefersReduced = usePrefersReducedMotion();
 
   const rawX = useMotionValue(-100);
   const rawY = useMotionValue(-100);
@@ -59,7 +61,7 @@ export function FollowerDot() {
   const y = useTransform(springY, (v) => v - HALF);
 
   useEffect(() => {
-    if (!hasHover) return;
+    if (!hasHover || prefersReduced) return;
 
     const handleMove = (e: MouseEvent) => {
       rawX.set(e.clientX);
@@ -68,9 +70,9 @@ export function FollowerDot() {
 
     window.addEventListener("mousemove", handleMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMove);
-  }, [hasHover, rawX, rawY]);
+  }, [hasHover, prefersReduced, rawX, rawY]);
 
-  if (!mounted || !hasHover) return null;
+  if (!mounted || !hasHover || prefersReduced) return null;
 
   return (
     <motion.div

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { SobreMiPortfolio } from "@/types/portfolio";
+import { prefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 type SeccionPresentacionProps = {
   sobreMi: SobreMiPortfolio;
@@ -37,6 +38,11 @@ function LineReveal({ text, delay }: { text: string; delay: number }) {
     const el = ref.current;
     if (!el) return;
 
+    if (prefersReducedMotion()) {
+      el.classList.add("pres-line--visible");
+      return;
+    }
+
     // Si ya está visible en viewport al montar, activar directo
     const rect = el.getBoundingClientRect();
     if (rect.top < window.innerHeight * 0.95) {
@@ -66,6 +72,16 @@ function LineReveal({ text, delay }: { text: string; delay: number }) {
   );
 }
 
+function tokenize(text: string) {
+  const tokens: string[] = [];
+  const parts = text.split(TWS_TOKEN);
+  parts.forEach((part, index) => {
+    tokens.push(...part.split(/\s+/).filter(Boolean));
+    if (index < parts.length - 1) tokens.push(TWS_TOKEN);
+  });
+  return tokens;
+}
+
 /* ── Párrafo con detección de líneas visuales reales ── */
 function SplitParagraph({
   text,
@@ -80,6 +96,8 @@ function SplitParagraph({
   const measure = useCallback(() => {
     const para = measureRef.current;
     if (!para) return;
+    if (prefersReducedMotion()) return;
+    if (para.getBoundingClientRect().top < window.innerHeight * 0.95) return;
 
     const spans = Array.from(para.querySelectorAll<HTMLElement>("[data-word]"));
     if (!spans.length) return;
@@ -103,49 +121,51 @@ function SplitParagraph({
 
   useEffect(() => {
     if (lines !== null) return;
-    // requestAnimationFrame garantiza que el layout ya fue calculado
-    const raf = requestAnimationFrame(() => {
-      measure();
-    });
-    return () => cancelAnimationFrame(raf);
+
+    let cancelled = false;
+    let raf = 0;
+    const run = () => {
+      raf = requestAnimationFrame(() => {
+        if (!cancelled) measure();
+      });
+    };
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        if (!cancelled) run();
+      });
+    } else {
+      run();
+    }
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+    };
   }, [lines, measure]);
 
-  // Fase de medición: el texto está visible pero lo tapamos con color igual al fondo
-  // Así el layout se calcula con las dimensiones reales
-  if (lines === null) {
-    // Tokenizamos manteniendo "Tech With Soul" como token único (no se parte)
-    const tokens: string[] = [];
-    const parts = text.split(TWS_TOKEN);
-    parts.forEach((part, i) => {
-      tokens.push(...part.split(/\s+/).filter(Boolean));
-      if (i < parts.length - 1) tokens.push(TWS_TOKEN);
-    });
+  const tokens = tokenize(text);
 
+  if (lines === null) {
     return (
-      <p
-        ref={measureRef}
-        className={className}
-        style={{ color: "transparent", userSelect: "none", pointerEvents: "none" }}
-        aria-hidden="true"
-      >
-        {tokens.map((word, i) => (
+      <p ref={measureRef} className={className}>
+        {tokens.map((word, index) => (
           <span
-            key={i}
+            key={`${word}-${index}`}
             data-word={word}
             style={word === TWS_TOKEN ? { whiteSpace: "nowrap" } : undefined}
           >
-            {word}{" "}
+            {word === TWS_TOKEN ? <LineContent text={word} /> : word}{" "}
           </span>
         ))}
       </p>
     );
   }
 
-  // Fase animada
   return (
-    <p className={className}>
-      {lines.map((line, i) => (
-        <LineReveal key={i} text={line} delay={i * 40} />
+    <p className={`${className} presentacion-motion`}>
+      {lines.map((line, index) => (
+        <LineReveal key={`${line}-${index}`} text={line} delay={index * 40} />
       ))}
     </p>
   );

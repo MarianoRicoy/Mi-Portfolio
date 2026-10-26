@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import {
+  prefersReducedMotion,
+  subscribeReducedMotion,
+} from "@/hooks/use-prefers-reduced-motion";
 
 export function useScrollReveal<T extends HTMLElement>(delay = 0) {
   const ref = useRef<T>(null);
@@ -9,31 +13,45 @@ export function useScrollReveal<T extends HTMLElement>(delay = 0) {
     const el = ref.current;
     if (!el) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    let observer: IntersectionObserver | null = null;
+
+    const reveal = (withDelay: boolean) => {
+      el.style.transitionDelay = withDelay ? `${delay}ms` : "0ms";
       el.classList.add("scroll-reveal--visible");
-      return;
+      observer?.disconnect();
+    };
+
+    const unsubscribe = subscribeReducedMotion(() => {
+      if (prefersReducedMotion()) reveal(false);
+    });
+
+    if (prefersReducedMotion()) {
+      reveal(false);
+      return unsubscribe;
     }
 
     const rect = el.getBoundingClientRect();
     if (rect.top < window.innerHeight * 0.92) {
-      el.style.transitionDelay = `${delay}ms`;
-      el.classList.add("scroll-reveal--visible");
-      return;
+      reveal(true);
+      return unsubscribe;
     }
 
     el.style.transitionDelay = `${delay}ms`;
-    const observer = new IntersectionObserver(
+    observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           el.classList.add("scroll-reveal--visible");
-          observer.unobserve(el);
+          observer?.unobserve(el);
         }
       },
       { threshold: 0.08, rootMargin: "0px 0px -40px 0px" },
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      unsubscribe();
+      observer?.disconnect();
+    };
   }, [delay]);
 
   return ref;

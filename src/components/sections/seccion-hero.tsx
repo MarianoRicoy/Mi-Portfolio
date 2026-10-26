@@ -1,10 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, animate } from "framer-motion";
 import type { HeroPortfolio } from "@/types/portfolio";
 import { useMouseRotation } from "@/hooks/use-mouse-rotation";
+import {
+  prefersReducedMotion,
+  useIsomorphicLayoutEffect,
+} from "@/hooks/use-prefers-reduced-motion";
 
 type SeccionHeroProps = {
   hero: HeroPortfolio;
@@ -36,7 +40,39 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
     timersRef.current = [];
   };
 
+  const showStaticHero = useCallback(() => {
+    setTitleVisible(true);
+    setTitleOpacity(1);
+    setMouseEnabled(false);
+    setContentVisible(true);
+    setDisplayedSummary(fullSummary);
+    setDisplayedLabel1(label1Text);
+    setDisplayedLabel2(label2Text);
+    hasTypedRef.current = true;
+    dispatchedRef.current = true;
+    clearAllTimers();
+  }, [fullSummary, label1Text, label2Text]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (!prefersReducedMotion()) return;
+    showStaticHero();
+  }, [fullSummary, label1Text, label2Text]);
+
   useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => {
+      if (media.matches) showStaticHero();
+    };
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, [showStaticHero]);
+
+  useEffect(() => {
+    if (prefersReducedMotion()) {
+      showStaticHero();
+      return;
+    }
+
     let timeoutId: ReturnType<typeof setTimeout>;
     const handler = () => {
       timeoutId = setTimeout(() => setTitleVisible(true), 120);
@@ -46,28 +82,41 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
       window.removeEventListener("navbarTypingDone", handler);
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [showStaticHero]);
 
   useEffect(() => {
     if (!titleVisible) return;
+    if (prefersReducedMotion()) {
+      showStaticHero();
+      return;
+    }
 
     setTitleOpacity(1);
 
     let contentTimeoutId: ReturnType<typeof setTimeout>;
     let cancelled = false;
+    const controls: Array<{ stop: () => void }> = [];
 
-    const sequence = async () => {
-      await animate(x, 0.1, { duration: 0.5, ease: [0.22, 1, 0.36, 1] });
-      await animate(x, 0.9, { duration: 0.55, ease: [0.22, 1, 0.36, 1] });
-      await animate(x, 0.5, { duration: 0.45, ease: [0.22, 1, 0.36, 1] });
-    };
-    const sequenceY = async () => {
-      await animate(y, 0.2, { duration: 0.5, ease: [0.22, 1, 0.36, 1] });
-      await animate(y, 0.8, { duration: 0.55, ease: [0.22, 1, 0.36, 1] });
-      await animate(y, 0.5, { duration: 0.45, ease: [0.22, 1, 0.36, 1] });
+    const play = async (
+      value: typeof x,
+      frames: number[],
+      durations: number[],
+    ) => {
+      for (let index = 0; index < frames.length; index += 1) {
+        if (cancelled) return;
+        const control = animate(value, frames[index], {
+          duration: durations[index],
+          ease: [0.22, 1, 0.36, 1],
+        });
+        controls.push(control);
+        await control;
+      }
     };
 
-    Promise.all([sequence(), sequenceY()]).then(() => {
+    Promise.all([
+      play(x, [0.1, 0.9, 0.5], [0.5, 0.55, 0.45]),
+      play(y, [0.2, 0.8, 0.5], [0.5, 0.55, 0.45]),
+    ]).then(() => {
       if (cancelled) return;
       setMouseEnabled(true);
       contentTimeoutId = setTimeout(() => setContentVisible(true), 180);
@@ -75,16 +124,26 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
 
     return () => {
       cancelled = true;
+      controls.forEach((control) => control.stop());
       clearTimeout(contentTimeoutId);
     };
-  }, [titleVisible, x, y]);
+  }, [titleVisible, x, y, showStaticHero]);
 
   useEffect(() => {
+    if (prefersReducedMotion()) {
+      showStaticHero();
+      return;
+    }
     if (!contentVisible || hasTypedRef.current) return;
     hasTypedRef.current = true;
 
     let si = 0;
     const summaryTimer = setInterval(() => {
+      if (prefersReducedMotion()) {
+        clearInterval(summaryTimer);
+        showStaticHero();
+        return;
+      }
       if (si < fullSummary.length) {
         setDisplayedSummary(fullSummary.slice(0, si + 1));
         si++;
@@ -119,7 +178,7 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
       clearAllTimers();
       hasTypedRef.current = false;
     };
-  }, [contentVisible, fullSummary, label1Text, label2Text]);
+  }, [contentVisible, fullSummary, label1Text, label2Text, showStaticHero]);
 
   useEffect(() => {
     if (!contentVisible || dispatchedRef.current) return;
@@ -206,7 +265,7 @@ export function SeccionHero({ hero }: SeccionHeroProps) {
         </div>
 
         <div
-          className="flex-1 flex items-center justify-center"
+          className="hero-reveal flex-1 flex items-center justify-center"
           style={{
             opacity: contentVisible ? 1 : 0,
             transform: contentVisible ? "translateY(0)" : "translateY(14px)",
