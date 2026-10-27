@@ -12,7 +12,7 @@ export function SeccionExperiencia({ experiencia, formacion }: SeccionExperienci
   return (
     <section id="experiencia" className="line-divider pt-10 md:pt-14">
       <ScrollReveal>
-        <p className="kicker text-black/60">[ Experiencia ]</p>
+        <h2 className="kicker text-black/60">[ Experiencia ]</h2>
       </ScrollReveal>
 
       <div className="mt-7 grid gap-5 md:grid-cols-2">

@@ -114,7 +114,7 @@ export function TechStack() {
                 </div>
 
                 {/* Label de la tecnología con hover reactivo */}
-                <span className="text-[0.68rem] tracking-wider uppercase font-bold text-black/40 group-hover:text-black transition-colors duration-300">
+                <span className="text-[0.68rem] tracking-wider uppercase font-bold text-black/55 group-hover:text-black transition-colors duration-300">
                   {tech.name}
                 </span>
               </div>
@@ -141,7 +141,7 @@ export function TechStack() {
                 </div>
 
                 {/* Label de la tecnología con hover reactivo */}
-                <span className="text-[0.68rem] tracking-wider uppercase font-bold text-black/40 group-hover:text-black transition-colors duration-300">
+                <span className="text-[0.68rem] tracking-wider uppercase font-bold text-black/55 group-hover:text-black transition-colors duration-300">
                   {tech.name}
                 </span>
               </div>
