@@ -111,13 +111,19 @@ a {
 
 .nav-bracket-link {
   display: inline-block;
+  margin: -0.42rem -0.6rem;
+  padding: 0.42rem 0.6rem;
+  border-radius: 0.35rem;
+  background: transparent;
   color: color-mix(in srgb, var(--foreground) 62%, transparent);
   text-decoration: none;
-  transition: color 180ms ease;
+  transition: color 180ms ease, background 150ms ease;
 }
 
-.nav-bracket-link:hover {
+.nav-bracket-link:hover,
+.nav-bracket-link:focus-visible {
   color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 
 .navbar--sticky .navbar-brand {
@@ -128,8 +134,15 @@ a {
   color: rgba(17, 18, 24, 0.72);
 }
 
-.navbar--sticky .nav-bracket-link:hover {
+.navbar--sticky .nav-bracket-link:hover,
+.navbar--sticky .nav-bracket-link:focus-visible {
   color: #111218;
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+.navbar--sticky .nav-bracket-link:focus-visible {
+  outline: 2px solid #111218;
+  outline-offset: 3px;
 }
 
 /* ── DROPDOWN DE PROYECTOS ── */
@@ -1013,6 +1026,7 @@ button.contacto-accion {
   .nav-bracket-link {
     display: block;
     width: 100%;
+    margin: 0;
     padding: 0.85rem 0;
     font-size: 0.66rem;
   }
@@ -1168,5 +1182,9 @@ button.contacto-accion {
 
   .proj-flip-back {
     pointer-events: none;
+  }
+
+  .nav-bracket-link {
+    transition: none;
   }
 }
